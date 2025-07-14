@@ -1,9 +1,9 @@
- const IntroPage: React.FC = () => {
+ const SignupPage: React.FC = () => {
   return (
     <>
-    
+
     </>
   );
 }
 
-export default IntroPage
+export default SignupPage

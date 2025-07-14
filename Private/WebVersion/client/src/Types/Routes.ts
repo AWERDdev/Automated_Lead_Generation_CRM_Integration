@@ -1,5 +1,7 @@
 export const ROUTES = {
     HOWITWORKS:"/INFO",
     MAINPAGE:"/Main_page",
-    INTRO:"/"
+    INTRO:"/",
+    SIGNUP:"/Signup",
+    LOGIN:"Login"
 } as const

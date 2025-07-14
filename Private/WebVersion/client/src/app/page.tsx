@@ -3,7 +3,15 @@ import { Buttonstyle1 , Buttonstyle2 } from "@/components/ButtonStyles";
 import  Card  from '@/components/Card'
 import BNavbar from "@/components/BottomBar";
 import Image from "next/image";
+import { ROUTES } from "@/Types/Routes";
+import { useRouter } from 'next/navigation';
 const IntroPage: React.FC = () => {
+  const router = useRouter()
+  
+  const go_to_Signup = () =>{
+    router.push(ROUTES.SIGNUP)
+  }
+
   return (
     <>
     <main className="flex flex-col min-h-screen">
@@ -17,8 +25,8 @@ const IntroPage: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Automate Your Lead Generation</h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">Transform your sales process with AI-powered lead generation and seamless CRM integration. Capture, nurture, and convert leads automatically.</p>
           <div className="space-x-4">
-            <Buttonstyle1 ButtonFUNC={() => {console.log('hello world')}} buttonText="Get Started Free"/>
-            <Buttonstyle2 ButtonFUNC={() => {console.log('hello world')}} buttonText="Learn More"/>
+            <Buttonstyle1 ButtonFUNC={go_to_Signup} buttonText="Get Started Free"/>
+            <Buttonstyle2 ButtonFUNC={go_to_Signup} buttonText="Learn More"/>
           </div>
         </div>
       </section>
@@ -49,7 +57,7 @@ const IntroPage: React.FC = () => {
         <div className="container px-4 md:px-6 flex flex-col items-center space-y-4 text-center">
           <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Ready to Transform Your Sales Process?</h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">Join thousands of businesses already using our platform to generate more qualified leads.</p>
-          <Buttonstyle1 ButtonFUNC={() => {console.log('hello world')}} buttonText="Start Your Free Trial"/>
+          <Buttonstyle1 ButtonFUNC={go_to_Signup} buttonText="Start Your Free Trial"/>
         </div>
       </section>
       {/* Footer/BottomBar */}

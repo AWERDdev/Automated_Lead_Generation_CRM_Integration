@@ -51,7 +51,7 @@ const features = [
   }
 ];
 
-const IntroPage: React.FC = () => {
+const INFOPage: React.FC = () => {
   return (
     <>
       <Navbar />
@@ -106,4 +106,4 @@ const IntroPage: React.FC = () => {
   );
 }
 
-export default IntroPage
+export default INFOPage

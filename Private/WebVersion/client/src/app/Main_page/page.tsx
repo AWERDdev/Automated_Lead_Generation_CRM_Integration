@@ -1,5 +1,5 @@
  
-const IntroPage: React.FC = () => {
+const MainPage: React.FC = () => {
   return (
     <>
     
@@ -7,4 +7,4 @@ const IntroPage: React.FC = () => {
   );
 }
 
-export default IntroPage
+export default MainPage

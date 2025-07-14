@@ -1,4 +1,4 @@
- const IntroPage: React.FC = () => {
+ const LoginPage: React.FC = () => {
   return (
     <>
     
@@ -6,4 +6,4 @@
   );
 }
 
-export default IntroPage
+export default LoginPage
