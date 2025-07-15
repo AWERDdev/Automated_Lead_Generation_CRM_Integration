@@ -1,4 +1,4 @@
-import Navbar from '@/components/NavBar';
+import { Navbar } from '@/components/NavBar';
 import { LinkStyle1 } from '@/components/LinkStyles';
 import Card from '@/components/Card';
 import { Buttonstyle1, Buttonstyle2 } from '@/components/ButtonStyles';

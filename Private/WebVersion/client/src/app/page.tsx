@@ -1,4 +1,4 @@
-import Navbar from "@/components/NavBar";
+import { Navbar } from "@/components/NavBar";
 import { Buttonstyle1 , Buttonstyle2 } from "@/components/ButtonStyles";
 import  Card  from '@/components/Card'
 import BNavbar from "@/components/BottomBar";
