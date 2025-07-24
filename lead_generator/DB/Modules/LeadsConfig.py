@@ -1,13 +1,56 @@
 import psycopg2
 
-def connect_DB():
-    return psycopg2.connect(
-        host = "localhost",
-        dbname = "leadgenegrator",
-        user = "postgres",
-        password = "1231AWERD1"
-    )
 
+def database_exists(dbname):
+    """Check if a database exists"""
+    conn = psycopg2.connect(
+        host="localhost",
+        dbname="postgres",  # Connect to default postgres database
+        user="postgres",
+        password="1231AWERD1"
+    )
+    conn.autocommit = True  # This is needed for creating databases
+    
+    with conn.cursor() as cur:
+        cur.execute("SELECT 1 FROM pg_database WHERE datname=%s", (dbname,))
+        exists = cur.fetchone() is not None
+    
+    conn.close()
+    return exists
+
+def create_database(dbname):
+    """Create a database if it doesn't exist"""
+    if not database_exists(dbname):
+        conn = psycopg2.connect(
+            host="localhost",
+            dbname="postgres",  # Connect to default postgres database
+            user="postgres",
+            password="1231AWERD1"
+        )
+        conn.autocommit = True  # This is needed for creating databases
+        
+        with conn.cursor() as cur:
+            # Use SQL string formatting to avoid quoting issues with database names
+            # This is safe because dbname is not user input in this context
+            cur.execute(f'CREATE DATABASE "{dbname}"')
+        
+        conn.close()
+        print(f"Database '{dbname}' created successfully")
+    else:
+        print(f"Database '{dbname}' already exists")
+    
+    return True
+
+def connect_DB(dbname="leadgenegrator"):
+    """Connect to the specified database, creating it if it doesn't exist"""
+    create_database(dbname)
+    
+    return psycopg2.connect(
+        host="localhost",
+        dbname=dbname,
+        user="postgres",
+        password="1231AWERD1"
+    )
 
 def enable_pgcrypto(conn):
     with conn.cursor() as cur:
