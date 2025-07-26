@@ -17,17 +17,17 @@ def get_soup(url):
         logging.error(f"Error fetching the URL: {e}")
         return None
 
-def extract_from_business_divs(soup):
+def extract_from_business_divs(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from div elements with business-entry class"""
     if soup is None:
         return []
         
     logging.info("Extracting data from business entry divs")
     leads = []
-    business_entries = soup.find_all("div", class_="business-entry")
+    business_entries = soup.find_all(elementName , class_=elemetClass)
     for entry in business_entries:
-        name = entry.find("span", class_="name").get_text(strip=True) if entry.find("span", class_="name") else "N/A"
-        email = entry.find("span", class_="email").get_text(strip=True) if entry.find("span", class_="email") else "N/A"
+        name = entry.find(elementSource , class_=elementSourceClass).get_text(strip=True) if entry.find(elementSource , class_=elementSourceClass) else "N/A"
+        email =  entry.find(elementSource , class_=elementSourceClass).get_text(strip=True) if entry.find(elementSource , class_=elementSourceClass) else "N/A"
         # add more spans if needed and change the type of needed to a p or anything else
         leads.append({
             "source": "business-entry",
@@ -36,7 +36,7 @@ def extract_from_business_divs(soup):
         })
     return leads
 
-def extract_from_tables(soup):
+def extract_from_tables(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from tables"""
     if soup is None:
         return []
@@ -57,7 +57,7 @@ def extract_from_tables(soup):
                 })
     return leads
 
-def extract_from_paragraphs(soup):
+def extract_from_paragraphs(soup  , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from paragraph tags"""
     if soup is None:
         return []
@@ -80,7 +80,7 @@ def extract_from_paragraphs(soup):
             })
     return leads
 
-def extract_from_list_items(soup):
+def extract_from_list_items(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from list items"""
     if soup is None:
         return []
@@ -104,7 +104,7 @@ def extract_from_list_items(soup):
                 })
     return leads
 
-def extract_from_images(soup):
+def extract_from_images(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from image alt text and captions"""
     if soup is None:
         return []
@@ -151,7 +151,7 @@ def extract_from_data_attrs(soup):
             })
     return leads
 
-def extract_from_json_ld(soup):
+def extract_from_json_ld(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from JSON-LD metadata"""
     if soup is None:
         return []
@@ -177,7 +177,7 @@ def extract_from_json_ld(soup):
             logging.warning(f"Failed to parse JSON-LD: {e}")
     return leads
 
-def extract_from_address(soup):
+def extract_from_address(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
     """Extract leads from address blocks"""
     if soup is None:
         return []
@@ -245,17 +245,3 @@ def scrape_leads(url="http://172.17.80.1:3000/lead_generator/Views/index.html", 
     
     logging.info(f"Extracted {len(leads)} leads in total")
     return {"leads": leads}
-
-# Example usage:
-if __name__ == "__main__":
-    # To run only paragraph extraction:
-    # result = scrape_leads(extractors=["paragraphs"])
-    
-    # To run multiple specific extractors:
-    # result = scrape_leads(extractors=["paragraphs", "tables", "address"])
-    
-    # To run all extractors (default):
-    # result = scrape_leads()
-    
-    # Example for paragraph extraction only
-    result = scrape_leads(extractors=["paragraphs"])
