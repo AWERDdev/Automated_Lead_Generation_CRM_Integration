@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import logging
+import json
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,194 +18,352 @@ def get_soup(url):
         logging.error(f"Error fetching the URL: {e}")
         return None
 
-def extract_from_business_divs(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
+def extract_from_divs(soup, element_name="div", element_class="business-entry", 
+                               source_element="h2", source_class="business-name", 
+                               fields=None):
     """Extract leads from div elements with business-entry class"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from business entry divs")
+    
+    logging.info(f"Extracting data from {element_name} with class {element_class}")
     leads = []
-    business_entries = soup.find_all(elementName , class_=elemetClass)
+    
+    # Default fields if none provided
+    if fields is None:
+        fields = {
+            "name": {"element": source_element, "class": source_class},
+            "email": {"element": "span", "class": "email"}
+        }
+    
+    business_entries = soup.find_all(element_name, class_=element_class)
     for entry in business_entries:
-        name = entry.find(elementSource , class_=elementSourceClass).get_text(strip=True) if entry.find(elementSource , class_=elementSourceClass) else "N/A"
-        email =  entry.find(elementSource , class_=elementSourceClass).get_text(strip=True) if entry.find(elementSource , class_=elementSourceClass) else "N/A"
-        # add more spans if needed and change the type of needed to a p or anything else
-        leads.append({
-            "source": "business-entry",
-            "name": name,
-            "email": email
-        })
+        lead = {"source": f"{element_name}-{element_class}"}
+        
+        # Extract each field based on configuration
+        for field_name, field_config in fields.items():
+            field_element = field_config.get("element", "span")
+            field_class = field_config.get("class")
+            field_attr = field_config.get("attribute")
+            
+            # Find the element
+            if field_class:
+                element = entry.find(field_element, class_=field_class)
+            else:
+                element = entry.find(field_element)
+            
+            # Extract the value
+            if element:
+                if field_attr and field_attr in element.attrs:
+                    value = element[field_attr]
+                else:
+                    value = element.get_text(strip=True)
+            else:
+                value = "N/A"
+            
+            lead[field_name] = value
+        
+        leads.append(lead)
+    
     return leads
 
-def extract_from_tables(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
+def extract_from_tables(soup, element_name="table", element_class="contact-table", 
+                        row_element="tr", cell_element="td", header_rows=1,
+                        fields=None):
     """Extract leads from tables"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from contact tables")
+    
+    logging.info(f"Extracting data from {element_name} with class {element_class}")
     leads = []
-    contact_tables = soup.find_all("table", class_="contact-table")
-    for table in contact_tables:
-        rows = table.find_all("tr")
-        for row in rows[1:]:  # Skip header row
-            cells = row.find_all("td")
-            if len(cells) >= 3:
-                leads.append({
-                    "source": "contact-table",
-                    "name": cells[0].get_text(strip=True),
-                    "email": cells[1].get_text(strip=True),
-                    "phone": cells[2].get_text(strip=True)
-                })
+    
+    # Default fields if none provided
+    if fields is None:
+        fields = ["name", "email", "phone"]
+    
+    tables = soup.find_all(element_name, class_=element_class)
+    for table in tables:
+        rows = table.find_all(row_element)
+        
+        # Skip header rows
+        for row in rows[header_rows:]:
+            cells = row.find_all(cell_element)
+            
+            if len(cells) >= len(fields):
+                lead = {"source": f"{element_name}-{element_class}"}
+                
+                # Map cells to field names
+                for i, field_name in enumerate(fields):
+                    lead[field_name] = cells[i].get_text(strip=True)
+                
+                leads.append(lead)
+    
     return leads
 
-def extract_from_paragraphs(soup  , elementName , elemetClass , elementSource ,  elementSourceClass):
-    """Extract leads from paragraph tags"""
+def extract_from_paragraphs(soup, element_name="p", element_class="contact-info", 
+                           patterns=None):
+    """Extract leads from paragraph tags using regex patterns"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from contact paragraphs")
+    
+    logging.info(f"Extracting data from {element_name} with class {element_class}")
     leads = []
-    contact_paragraphs = soup.find_all("p", class_="contact-info")
-    for p in contact_paragraphs:
-        # Extract using regex patterns
-        email_match = re.search(r'Email:\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', p.get_text())
-        phone_match = re.search(r'Phone:\s*([\d\s\(\)\-\+]+)', p.get_text())
-        name_match = re.search(r'Name:\s*([^,]+)', p.get_text())
+    
+    # Default patterns if none provided
+    if patterns is None:
+        patterns = {
+            "name": r'Name:\s*([^,]+)',
+            "email": r'Email:\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})',
+            "phone": r'Phone:\s*([\d\s\(\)\-\+]+)'
+        }
+    
+    paragraphs = soup.find_all(element_name, class_=element_class)
+    for p in paragraphs:
+        text = p.get_text()
+        lead = {"source": f"{element_name}-{element_class}"}
         
-        if email_match or phone_match:
-            leads.append({
-                "source": "contact-paragraph",
-                "name": name_match.group(1).strip() if name_match else "N/A",
-                "email": email_match.group(1).strip() if email_match else "N/A",
-                "phone": phone_match.group(1).strip() if phone_match else "N/A"
-            })
+        # Extract data using each regex pattern
+        for field_name, pattern in patterns.items():
+            match = re.search(pattern, text)
+            lead[field_name] = match.group(1).strip() if match else "N/A"
+        
+        # Only add if at least one field was found
+        if any(value != "N/A" for field, value in lead.items() if field != "source"):
+            leads.append(lead)
+    
     return leads
 
-def extract_from_list_items(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
+def extract_from_list_items(soup, element_name="ul", element_class="team-members", 
+                           item_element="li", fields=None):
     """Extract leads from list items"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from contact lists")
+    
+    logging.info(f"Extracting data from {element_name} with class {element_class}")
     leads = []
-    contact_lists = soup.find_all("ul", class_="team-members")
-    for ul in contact_lists:
-        list_items = ul.find_all("li")
-        for item in list_items:
-            name_el = item.find("strong")
-            email_el = item.find("a", href=lambda href: href and "mailto:" in href)
+    
+    # Default fields if none provided
+    if fields is None:
+        fields = {
+            "name": {"element": "strong"},
+            "email": {"element": "a", "attribute": "href", "transform": lambda x: x.replace("mailto:", "") if x.startswith("mailto:") else x}
+        }
+    
+    lists = soup.find_all(element_name, class_=element_class)
+    for list_element in lists:
+        items = list_element.find_all(item_element)
+        
+        for item in items:
+            lead = {"source": f"{element_name}-{element_class}"}
             
-            if name_el or email_el:
-                leads.append({
-                    "source": "team-list",
-                    "name": name_el.get_text(strip=True) if name_el else "N/A",
-                    "email": email_el.get_text(strip=True) if email_el else (
-                        email_el["href"].replace("mailto:", "") if email_el and "href" in email_el.attrs else "N/A"
-                    )
-                })
+            # Extract each field based on configuration
+            for field_name, field_config in fields.items():
+                field_element = field_config.get("element")
+                field_class = field_config.get("class")
+                field_attr = field_config.get("attribute")
+                transform_func = field_config.get("transform")
+                
+                # Find the element
+                if field_class:
+                    element = item.find(field_element, class_=field_class)
+                else:
+                    element = item.find(field_element)
+                
+                # Extract the value
+                if element:
+                    if field_attr and field_attr in element.attrs:
+                        value = element[field_attr]
+                    else:
+                        value = element.get_text(strip=True)
+                    
+                    # Apply transformation if provided
+                    if transform_func and callable(transform_func):
+                        value = transform_func(value)
+                else:
+                    value = "N/A"
+                
+                lead[field_name] = value
+            
+            leads.append(lead)
+    
     return leads
 
-def extract_from_images(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
+def extract_from_images(soup, element_name="figure", element_class="team-photo", 
+                       image_element="img", caption_element="figcaption", 
+                       fields=None):
     """Extract leads from image alt text and captions"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from team photos")
+    
+    logging.info(f"Extracting data from {element_name} with class {element_class}")
     leads = []
-    team_photos = soup.find_all("figure", class_="team-photo")
-    for figure in team_photos:
-        img = figure.find("img")
-        caption = figure.find("figcaption")
+    
+    # Default fields if none provided
+    if fields is None:
+        fields = {
+            "name": {"element": image_element, "attribute": "alt"},
+            "email": {"element": caption_element, "regex": r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'}
+        }
+    
+    figures = soup.find_all(element_name, class_=element_class)
+    for figure in figures:
+        lead = {"source": f"{element_name}-{element_class}"}
         
-        if img and "alt" in img.attrs:
-            name = img["alt"]
-            email = "N/A"
+        # Extract each field based on configuration
+        for field_name, field_config in fields.items():
+            field_element = field_config.get("element")
+            field_class = field_config.get("class")
+            field_attr = field_config.get("attribute")
+            regex_pattern = field_config.get("regex")
             
-            # Check if caption has email
-            if caption:
-                email_match = re.search(r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', caption.get_text())
-                if email_match:
-                    email = email_match.group(1)
+            # Find the element
+            if field_class:
+                element = figure.find(field_element, class_=field_class)
+            else:
+                element = figure.find(field_element)
             
-            leads.append({
-                "source": "team-photo",
-                "name": name,
-                "email": email
-            })
+            # Extract the value
+            if element:
+                if regex_pattern:
+                    match = re.search(regex_pattern, element.get_text())
+                    value = match.group(1) if match else "N/A"
+                elif field_attr and field_attr in element.attrs:
+                    value = element[field_attr]
+                else:
+                    value = element.get_text(strip=True)
+            else:
+                value = "N/A"
+            
+            lead[field_name] = value
+        
+        leads.append(lead)
+    
     return leads
 
-def extract_from_data_attrs(soup):
+def extract_from_data_attrs(soup, element_name="div", element_class="employee-card", 
+                           required_attrs=None, attributes=None):
     """Extract leads from data attributes"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from employee cards")
+    
+    logging.info(f"Extracting data from {element_name} with class {element_class}")
     leads = []
-    employee_cards = soup.find_all("div", class_="employee-card")
-    for card in employee_cards:
-        if card.has_attr("data-name") and card.has_attr("data-email"):
-            leads.append({
-                "source": "employee-card",
-                "name": card["data-name"],
-                "email": card["data-email"],
-                "position": card["data-position"] if card.has_attr("data-position") else "N/A"
-            })
+    
+    # Default required attributes if none provided
+    if required_attrs is None:
+        required_attrs = ["data-name", "data-email"]
+    
+    # Default attributes to extract if none provided
+    if attributes is None:
+        attributes = {
+            "name": "data-name",
+            "email": "data-email",
+            "position": "data-position"
+        }
+    
+    elements = soup.find_all(element_name, class_=element_class)
+    for element in elements:
+        # Check if all required attributes are present
+        if all(element.has_attr(attr) for attr in required_attrs):
+            lead = {"source": f"{element_name}-{element_class}"}
+            
+            # Extract each attribute
+            for field_name, attr_name in attributes.items():
+                lead[field_name] = element[attr_name] if element.has_attr(attr_name) else "N/A"
+            
+            leads.append(lead)
+    
     return leads
 
-def extract_from_json_ld(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
+def extract_from_json_ld(soup, element_name="script", type_attr="application/ld+json", 
+                        schema_type="Person", fields=None):
     """Extract leads from JSON-LD metadata"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from JSON-LD metadata")
+    
+    logging.info(f"Extracting data from {element_name} with type {type_attr}")
     leads = []
-    json_ld_scripts = soup.find_all("script", type="application/ld+json")
+    
+    # Default fields if none provided
+    if fields is None:
+        fields = {
+            "name": "name",
+            "email": "email",
+            "phone": "telephone",
+            "url": "url"
+        }
+    
+    json_ld_scripts = soup.find_all(element_name, type=type_attr)
     for script in json_ld_scripts:
         try:
-            import json
-            data = json.loads(script.string)
-            
-            # Look for Person schema
-            if data.get("@type") == "Person":
-                leads.append({
-                    "source": "json-ld",
-                    "name": data.get("name", "N/A"),
-                    "email": data.get("email", "N/A"),
-                    "phone": data.get("telephone", "N/A"),
-                    "url": data.get("url", "N/A")
-                })
+            if script.string:
+                data = json.loads(script.string)
+                
+                # Check if it matches the expected type
+                if data.get("@type") == schema_type:
+                    lead = {"source": f"{element_name}-{schema_type}"}
+                    
+                    # Extract each field
+                    for field_name, json_path in fields.items():
+                        lead[field_name] = data.get(json_path, "N/A")
+                    
+                    leads.append(lead)
         except (json.JSONDecodeError, AttributeError) as e:
             logging.warning(f"Failed to parse JSON-LD: {e}")
+    
     return leads
 
-def extract_from_address(soup , elementName , elemetClass , elementSource ,  elementSourceClass):
+def extract_from_address(soup, element_name="address", element_class=None, patterns=None):
     """Extract leads from address blocks"""
     if soup is None:
         return []
-        
-    logging.info("Extracting data from address blocks")
+    
+    logging.info(f"Extracting data from {element_name} blocks")
     leads = []
-    address_blocks = soup.find_all("address")
+    
+    # Default patterns if none provided
+    if patterns is None:
+        patterns = {
+            "email": r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})',
+            "address": r'(.+)'
+        }
+    
+    kwargs = {}
+    if element_class:
+        kwargs["class_"] = element_class
+    
+    address_blocks = soup.find_all(element_name, **kwargs)
     for addr in address_blocks:
-        # Often contact info is in address tags
-        email_match = re.search(r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', addr.get_text())
-        if email_match:
-            name_el = addr.find_previous("h3") or addr.find_previous("h2")
-            leads.append({
-                "source": "address-block",
-                "name": name_el.get_text(strip=True) if name_el else "N/A",
-                "email": email_match.group(1),
-                "address": re.sub(r'([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', '', addr.get_text(strip=True))
-            })
+        text = addr.get_text()
+        lead = {"source": f"{element_name}-block"}
+        
+        # Extract using patterns
+        for field_name, pattern in patterns.items():
+            match = re.search(pattern, text)
+            if match:
+                lead[field_name] = match.group(1).strip()
+        
+        # Special case for name - look for preceding heading
+        name_element = addr.find_previous("h3") or addr.find_previous("h2")
+        lead["name"] = name_element.get_text(strip=True) if name_element else "N/A"
+        
+        # Only add if email was found
+        if "email" in lead and lead["email"] != "N/A":
+            # Clean up the address field by removing the email
+            if "address" in lead and "email" in lead:
+                lead["address"] = re.sub(re.escape(lead["email"]), "", lead["address"]).strip()
+            
+            leads.append(lead)
+    
     return leads
 
-def scrape_leads(url="http://172.17.80.1:3000/lead_generator/Views/index.html", extractors=None):
+def scrape_leads(url="http://172.17.80.1:3000/lead_generator/Views/index.html", extractors=None, configs=None):
     """
     Main function to scrape leads with configurable extractors
     
     Args:
         url (str): URL to scrape
-        extractors (list): List of extractor functions to use. If None, all extractors are used.
+        extractors (list): List of extractor function names to use
+        configs (dict): Dictionary of configurations for extractors
     
     Returns:
         dict: Dictionary containing extracted leads
@@ -215,7 +374,7 @@ def scrape_leads(url="http://172.17.80.1:3000/lead_generator/Views/index.html", 
     
     # Define all available extractors
     all_extractors = {
-        "business_divs": extract_from_business_divs,
+        "divs": extract_from_divs,
         "tables": extract_from_tables,
         "paragraphs": extract_from_paragraphs,
         "list_items": extract_from_list_items,
@@ -229,11 +388,19 @@ def scrape_leads(url="http://172.17.80.1:3000/lead_generator/Views/index.html", 
     if extractors is None:
         extractors = all_extractors.keys()
     
+    # Initialize configurations if none provided
+    if configs is None:
+        configs = {}
+    
     # Run selected extractors
     leads = []
     for extractor_name in extractors:
         if extractor_name in all_extractors:
-            extractor_leads = all_extractors[extractor_name](soup)
+            # Get configuration for this extractor if available
+            config = configs.get(extractor_name, {})
+            
+            # Call the extractor with the configuration
+            extractor_leads = all_extractors[extractor_name](soup, **config)
             leads.extend(extractor_leads)
             logging.info(f"Extracted {len(extractor_leads)} leads from {extractor_name}")
         else:
