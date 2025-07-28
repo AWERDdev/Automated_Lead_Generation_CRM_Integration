@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from Routes.DOMLeadsRoute import router
 app = FastAPI()
 
 # This will execute when the script is run directly
