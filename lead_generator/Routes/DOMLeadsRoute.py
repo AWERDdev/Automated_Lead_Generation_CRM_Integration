@@ -12,7 +12,7 @@ def Welcome_Message():
     return{"message":"welcome to the DOM Leads Extractor"}
 
 
-@router.get("/Divs")
+@router.get("/Divs", url = str )
 def DOMLEADS():
     results = DOMLeadExtractor.scrape_leads(url = "https://www.yellowpages.com/search?search_terms=coffee&geo_location",extractors = 'divs' , configs = None )
     return {"message": "DOM leads scraped","Results":results}

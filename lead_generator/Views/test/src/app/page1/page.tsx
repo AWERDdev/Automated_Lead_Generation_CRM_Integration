@@ -1,7 +1,22 @@
+'use client'
 import React from 'react';
-import Image from 'next/image';
+// import Image from 'next/image';
 
 export default function TestDOMExtractorPage() {
+  const scrapeData = async () =>{
+    console.log("scraping data")
+   const url = 'http://localhost:3000/page1'
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/DOMLeads/Divs?url=${url}`,)
+      const data  = await response.json()
+      console.log('Python API response', data)
+    }
+    catch(error){
+      console.log(`Failed to scrape data ${error}`)
+    }
+
+  }
+
   return (
     <>
       <section className="mb-8">
@@ -125,10 +140,10 @@ export default function TestDOMExtractorPage() {
         <h2 className="text-2xl font-bold mb-4">Team Photos</h2>
         <div className="grid md:grid-cols-3 gap-4">
           <figure className="team-photo bg-white p-2 border rounded text-center">
-            <Image 
+            <img 
               src="https://via.placeholder.com/150" 
               alt="Emily Davis" 
-              className="mx-auto rounded-full"
+              className="mx-auto rounded-full"  
             />
             <figcaption className="mt-2">
               Emily Davis - Head of Design<br />
@@ -136,7 +151,7 @@ export default function TestDOMExtractorPage() {
             </figcaption>
           </figure>
           <figure className="team-photo bg-white p-2 border rounded text-center">
-            <Image 
+            <img 
               src="https://via.placeholder.com/150" 
               alt="Kevin Taylor" 
               className="mx-auto rounded-full"
@@ -147,7 +162,7 @@ export default function TestDOMExtractorPage() {
             </figcaption>
           </figure>
           <figure className="team-photo bg-white p-2 border rounded text-center">
-            <Image 
+            <img 
               src="https://via.placeholder.com/150" 
               alt="Sophia Lee" 
               className="mx-auto rounded-full"
@@ -196,7 +211,7 @@ export default function TestDOMExtractorPage() {
         </div>
       </section>
       
-      <section className="mb-8">
+      <section className="mb-3">
         <h2 className="text-2xl font-bold mb-4">Contact Address</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="bg-white p-4 border rounded">
@@ -221,7 +236,9 @@ export default function TestDOMExtractorPage() {
           </div>
         </div>
       </section>
-      
+      <section className='mb-5 flex justify-center'>
+        <button className='bg-black text-white p-3 rounded-md cursor-pointer' onClick={scrapeData}>Scrape data</button>
+      </section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: `
         {
           "@context": "https://schema.org",
