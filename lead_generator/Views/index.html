@@ -9,10 +9,172 @@
     <div class="business-entry">
         <span class="name">Alice Smith</span>
         <span class="email">alice@example.com</span>
-      </div>
-      <div class="business-entry">
+        <span class="phone">(555) 111-2222</span>
+    </div>
+    <div class="business-entry">
         <span class="name">Bob Jones</span>
         <span class="email">bob@example.com</span>
-      </div>
+        <span class="phone">(555) 333-4444</span>
+    </div>
+    
+    <div class="contact-block">
+        <h3 class="contact-name">Charlie Wilson</h3>
+        <div class="contact-details">
+            <p>Email: charlie@example.com</p>
+            <p>Phone: (555) 555-6666</p>
+            <p>Role: Developer</p>
+        </div>
+    </div>
+    
+    <div class="contact-block">
+        <h3 class="contact-name">Diana Brown</h3>
+        <div class="contact-details">
+            <p>Email: diana@example.com</p>
+            <p>Phone: (555) 777-8888</p>
+            <p>Role: Designer</p>
+        </div>
+    </div>
+    
+    <p class="contact-info">
+        Name: Emma Davis<br>
+        Email: emma@example.com<br>
+        Phone: (555) 999-0000<br>
+        Hours: 9am - 5pm EST
+    </p>
+    
+    <ul class="team-members">
+        <li>
+            <strong>Frank Miller</strong>
+            <div>Manager</div>
+            <a href="mailto:frank@example.com">frank@example.com</a>
+        </li>
+        <li>
+            <strong>Grace Lee</strong>
+            <div>Analyst</div>
+            <a href="mailto:grace@example.com">grace@example.com</a>
+        </li>
+    </ul>
+    
+    <figure class="team-photo">
+        <img src="https://via.placeholder.com/150" alt="Henry Johnson" />
+        <figcaption>
+            Henry Johnson - Senior Developer<br>
+            henry.johnson@example.com
+        </figcaption>
+    </figure>
+    
+    <div class="employee-card" data-name="Ivy Chen" data-email="ivy.chen@example.com" data-position="UX Designer">
+        <h3>Ivy Chen</h3>
+        <p>UX Designer</p>
+        <p class="text-blue-500">ivy.chen@example.com</p>
+    </div>
+    
+    <address class="mt-2 not-italic">
+        123 Business Ave, Suite 100<br>
+        San Francisco, CA 94107<br>
+        United States<br><br>
+        Contact: info@example.com<br>
+        Phone: (555) 123-4567
+    </address>
+    
+    <table class="contact-table w-full border-collapse border">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="border p-2">Name</th>
+                <th class="border p-2">Email</th>
+                <th class="border p-2">Phone</th>
+                <th class="border p-2">Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="border p-2">Jack Smith</td>
+                <td class="border p-2">jack.smith@example.com</td>
+                <td class="border p-2">(555) 234-5678</td>
+                <td class="border p-2">Engineering</td>
+            </tr>
+            <tr>
+                <td class="border p-2">Kate Wilson</td>
+                <td class="border p-2">kate.wilson@example.com</td>
+                <td class="border p-2">(555) 345-6789</td>
+                <td class="border p-2">Marketing</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Alice Smith",
+            "email": "alice@example.com",
+            "telephone": "(555) 111-2222",
+            "jobTitle": "Software Engineer"
+        }
+    </script>
+    
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Tech Solutions Inc",
+            "url": "https://techsolutions.com",
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "(555) 123-4567",
+                "contactType": "customer service",
+                "email": "info@techsolutions.com"
+            }
+        }
+    </script>
+    
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Design Studio",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "456 Creative Street",
+                "addressLocality": "New York",
+                "addressRegion": "NY",
+                "postalCode": "10001"
+            },
+            "telephone": "(555) 987-6543",
+            "email": "contact@designstudio.com"
+        }
+    </script>
+    
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Charlie Wilson",
+            "jobTitle": "Developer",
+            "email": "charlie@example.com",
+            "telephone": "(555) 555-6666",
+            "worksFor": {
+                "@type": "Organization",
+                "name": "Tech Solutions Inc"
+            }
+        }
+    </script>
+    
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Henry Johnson",
+            "jobTitle": "Senior Developer",
+            "email": "henry.johnson@example.com",
+            "telephone": "(555) 777-8888",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "789 Tech Avenue",
+                "addressLocality": "San Jose",
+                "addressRegion": "CA"
+            }
+        }
+    </script>
 </body>
 </html>
