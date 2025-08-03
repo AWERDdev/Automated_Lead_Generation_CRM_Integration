@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from Modules import DOMLeadExtractor 
 from pydantic import BaseModel
-from Models import genConfig , DivExtractorConfig, ParagraphExtractorConfig, ListItemExtractorConfig, extract_from_tablesConfig, extract_from_imagesConfig, extract_from_data_attrsConfig, extract_from_json_ldConfig, extract_from_addressConfig
+from Models.DOMExtractorModels import genConfig , DivExtractorConfig, ParagraphExtractorConfig, ListItemExtractorConfig, extract_from_tablesConfig, extract_from_imagesConfig, extract_from_data_attrsConfig, extract_from_json_ld, extract_from_addressConfig
 
 router = APIRouter(
     prefix="/DOMLeads",
@@ -58,7 +58,7 @@ def DOMLEADS(url:str , config:extract_from_data_attrsConfig):
     return {"message": "DOM leads scraped","Results":results}
 
 @router.get("/extract_from_json_ld/{url}")
-def DOMLEADS(url:str , config:extract_from_json_ldConfig):
+def DOMLEADS(url:str , config:extract_from_json_ld):
     soup = DOMLeadExtractor.get_soup(url)
     results = DOMLeadExtractor.extract_from_divs(soup,element_name = config.element_name , type_attr = config.type_attr, schema_type = config.schema_type, fields = config.fields)
     return {"message": "DOM leads scraped","Results":results}
