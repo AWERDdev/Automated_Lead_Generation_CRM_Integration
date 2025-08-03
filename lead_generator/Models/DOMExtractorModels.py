@@ -19,6 +19,7 @@ class genConfig(BaseModel):
     extractors:str | None = None
 
 class DivExtractorConfig(BaseModel):
+    element_name:str | None = None
     extractor:str | None = None
     element_class: str | None = None
     source_element: str | None = None
@@ -27,17 +28,20 @@ class DivExtractorConfig(BaseModel):
 
 class ParagraphExtractorConfig(BaseModel):
     extractor:str | None = None
+    elementnname:str | None = None
     element_class: str | None = None
     patterns: object | None = None
     fields: object | None = None
 
-class ListItemExtractorConfig(BaseModel):    
+class ListItemExtractorConfig(BaseModel):
+    element_name:str | None = None    
     extractor:str | None = None
     element_class: str | None = None
     item_element: str | None = None
     fields: object | None = None
 
 class extract_from_tablesConfig(BaseModel):
+    element_name:str | None = None
     extractor:str | None = None
     element_class: str | None = None
     row_element: str | None = None
@@ -46,6 +50,7 @@ class extract_from_tablesConfig(BaseModel):
     fields: object | None = None
 
 class extract_from_imagesConfig(BaseModel):
+    element_name:str | None = None
     extractor:str | None = None
     element_class: str | None = None
     image_element: str | None = None
@@ -53,6 +58,7 @@ class extract_from_imagesConfig(BaseModel):
     fields: object | None = None
 
 class extract_from_data_attrsConfig(BaseModel):
+    element_name:str | None = None
     extractor:str | None = None
     element_class: str | None = None
     required_attrs: object | None = None
@@ -60,12 +66,14 @@ class extract_from_data_attrsConfig(BaseModel):
     fields: object | None = None
 
 class extract_from_json_ld(BaseModel):
+    element_name:str | None = None
     extractor:str | None = None
     type_attr: str | None = None
     schema_type: str | None = None
     fields: object | None = None
 
 class extract_from_addressConfig(BaseModel):
+    element_name:str | None = None
     extractor:str | None = None
     element_class: str | None = None
     source_element: str | None = None
