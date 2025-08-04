@@ -11,7 +11,7 @@ def get_soup(url):
         logging.info(f"Fetching content from {url}")
         response = requests.get(url, timeout=10)
         response.raise_for_status()
-        return BeautifulSoup(response.text, "html.parser")
+        return BeautifulSoup(response.text, "lxml")
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching the URL: {e}")
         return None
