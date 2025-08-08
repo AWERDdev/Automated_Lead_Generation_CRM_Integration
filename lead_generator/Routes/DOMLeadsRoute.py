@@ -1,9 +1,9 @@
 from fastapi import APIRouter , Body
-from Modules.DOMLeadExtractor import scrape_leads, extract_from_divs, extract_from_tables, extract_from_list_items, extract_from_data_attrs, extract_from_images, extract_from_address, extract_from_paragraphs
+from Modules.DOMLeadExtractor import extract_from_divs, extract_from_tables, extract_from_list_items, extract_from_data_attrs, extract_from_images, extract_from_address, extract_from_paragraphs
 from Modules.ExtractorModels.DOMExtractorsModules.Extractors_JSONLD import extract_from_json_ld
 from Modules.ExtractorModels.DOMExtractorsModules.FetchSoup import get_soup
 # from pydantic import BaseModel
-from ClassModels.DOMExtractorClassModels import genConfig , DivExtractorConfig, ParagraphExtractorConfig, ListItemExtractorConfig, extract_from_tablesConfig, extract_from_imagesConfig, extract_from_data_attrsConfig, extract_from_json_ld, extract_from_addressConfig
+from ClassModels.DOMExtractorClassModels import DivExtractorConfig, ParagraphExtractorConfig, ListItemExtractorConfig, extract_from_tablesConfig, extract_from_imagesConfig, extract_from_data_attrsConfig, extract_from_json_ld, extract_from_addressConfig
 
 router = APIRouter(
     prefix="/DOMLeads",
@@ -14,19 +14,6 @@ router = APIRouter(
 @router.get('/')
 def Welcome_Message():
     return{"message":"welcome to the DOM Leads Extractor"}
-
-
-@router.post("/config")
-async def DOMLEADS( url:str = Body(...) , config:genConfig = Body(...) ):
-    # Convert Pydantic model to dictionary
-    results = scrape_leads(url , element_name=config.element_name, element_class=config.element_class, 
-                               source_element=config.source_element, source_class=config.source_class, 
-                               fields=config.fields, multiple_elements=config.multiple_elements,
-                               multiple_source_elements=config.multiple_source_elements, 
-                               dynamic_fields=config.dynamic_fields, extractors=config.extractors)
-    print(f"results from the scraper configed  {results}")
-    return {"message": "DOM leads scraped","Results":results}
-
 
 @router.post("/divs")
 def DOMLEADS(url:str = Body(...) , config:DivExtractorConfig = Body(...)):

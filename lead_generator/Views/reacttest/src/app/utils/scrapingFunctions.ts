@@ -1,42 +1,42 @@
 // Scraping functions for DOM lead extraction
 
-export const scrapeWithConfig = async () => {
-  console.log("scraping with general config")
-  const url = 'http://localhost:3000/page1'
-  const config = {
-    element_class: "business-entry",
-    source_element: "div",
-    source_class: "mt-2",
-    element_name: "div",
-    fields: "name,email,phone",
-    multiple_elements: ["div", "span", "p"],
-    multiple_source_elements: ["h1", "h2", "h3", "p"],
-    dynamic_fields: {
-      "name": {"element": "span", "class": "name"},
-      "email": {"element": "span", "class": "email"},
-      "phone": {"element": "span", "class": "phone"},
-      "role": {"element": "span", "class": "role"},
-      "company": {"element": "span", "class": "company"}
-    },
-    extractors: {
-      "divs":{}
-  }
-  }
-    
-  try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url, config })
-    })
-    const data = await response.json()
-    console.log('General config response', data)
-  } catch(error) {
-    console.log(`Failed to scrape with config: ${error}`)
-  }
-}
+// export const scrapeWithConfig = async () => {
+//   console.log("scraping with general config")
+//   const url = 'http://localhost:3000/page1'
+//   const config = {
+//     element_class: "business-entry",
+//     source_element: "div",
+//     source_class: "mt-2",
+//     element_name: "div",
+//     fields: "name,email,phone",
+//     multiple_elements: ["div", "span", "p"],
+//     multiple_source_elements: ["h1", "h2", "h3", "p"],
+//     dynamic_fields: {
+//       "name": {"element": "span", "class": "name"},
+//       "email": {"element": "span", "class": "email"},
+//       "phone": {"element": "span", "class": "phone"},
+//       "role": {"element": "span", "class": "role"},
+//       "company": {"element": "span", "class": "company"}
+//     },
+//     extractors: {
+//       "divs":{}
+//   }
+//   }
+
+//   try {
+//     const response = await fetch(`http://127.0.0.1:8000/DOMLeads/config`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ url, config })
+//     })
+//     const data = await response.json()
+//     console.log('General config response', data)
+//   } catch(error) {
+//     console.log(`Failed to scrape with config: ${error}`)
+//   }
+// }
 
 export const scrapeDivs = async () => {
   console.log("scraping divs")

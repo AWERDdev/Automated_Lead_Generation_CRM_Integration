@@ -2,7 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import {
-  scrapeWithConfig,
+  // scrapeWithConfig,
   scrapeDivs,
   scrapeParagraphs,
   scrapeListItems,
@@ -250,7 +250,7 @@ export default function TestDOMExtractorPage() {
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Scraping Controls</h2>
           <div className='flex flex-wrap justify-center gap-3'>
             <button className='bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer' onClick={scrapeDivs}>Scrape Divs</button>
-            <button className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer' onClick={scrapeWithConfig}>General Config</button>
+            {/* <button className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer' onClick={scrapeWithConfig}>General Config</button> */}
             <button className='bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer' onClick={scrapeParagraphs}>Paragraphs</button>
             <button className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors cursor-pointer' onClick={scrapeListItems}>List Items</button>
             <button className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer' onClick={scrapeImages}>Images</button>
