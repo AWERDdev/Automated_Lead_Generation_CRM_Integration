@@ -19,8 +19,11 @@ def Welcome_Message():
 @router.post("/config")
 async def DOMLEADS( url:str = Body(...) , config:genConfig = Body(...) ):
     # Convert Pydantic model to dictionary
-    config_dict = config.dict()
-    results = scrape_leads(url , configs = config_dict )
+    results = scrape_leads(url , element_name=config.element_name, element_class=config.element_class, 
+                               source_element=config.source_element, source_class=config.source_class, 
+                               fields=config.fields, multiple_elements=config.multiple_elements,
+                               multiple_source_elements=config.multiple_source_elements, 
+                               dynamic_fields=config.dynamic_fields, extractors=config.extractors)
     print(f"results from the scraper configed  {results}")
     return {"message": "DOM leads scraped","Results":results}
 

@@ -17,8 +17,12 @@ export const scrapeWithConfig = async () => {
       "phone": {"element": "span", "class": "phone"},
       "role": {"element": "span", "class": "role"},
       "company": {"element": "span", "class": "company"}
-    }
+    },
+    extractors: {
+      "divs":{}
   }
+  }
+    
   try {
     const response = await fetch(`http://127.0.0.1:8000/DOMLeads/config`, {
       method: 'POST',
