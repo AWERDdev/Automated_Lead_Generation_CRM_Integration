@@ -24,7 +24,7 @@ class DivExtractorConfig(BaseModel):
     element_class: str | None = None
     source_element: str | None = None
     source_class: str | None = None
-    fields: object | None = None
+    fields: dict | None = None
 
 class ParagraphExtractorConfig(BaseModel):
     extractor: str | None = None

@@ -11,12 +11,12 @@ export const scrapeWithConfig = async () => {
     fields: "name,email,phone"
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/config/${url}`, {
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/config`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('General config response', data)
@@ -35,12 +35,12 @@ export const scrapeDivs = async () => {
     source_class: "name,email,phone"
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/divs/${url}`, {
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/divs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('Divs response', data)
@@ -59,12 +59,12 @@ export const scrapeParagraphs = async () => {
     fields: ["name", "email", "phone", "hours"]
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/paragraphs/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/paragraphs`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('Paragraphs response', data)
@@ -83,12 +83,12 @@ export const scrapeListItems = async () => {
     fields: ["name", "role", "email"]
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/list_items/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/list_items`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('List items response', data)
@@ -108,12 +108,12 @@ export const scrapeImages = async () => {
     fields: ["name", "role", "email"]
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/images/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/images`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('Images response', data)
@@ -132,12 +132,12 @@ export const scrapeDataAttributes = async () => {
     attributes: ["data-name", "data-email", "data-position"]
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_data_attrs/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_data_attrs`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('Data attributes response', data)
@@ -156,12 +156,12 @@ export const scrapeJsonLd = async () => {
     fields: ["name", "email", "telephone"]
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_json_ld/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_json_ld`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('JSON-LD response', data)
@@ -182,12 +182,12 @@ export const scrapeAddress = async () => {
     fields: ["street", "city", "country", "contact", "phone"]
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_address/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_address`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('Address response', data)
@@ -207,12 +207,12 @@ export const scrapeTables = async () => {
     header_rows: 1
   }
   try {
-    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_table/${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:8000/DOMLeads/extract_from_table`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify({ config, url })
     })
     const data = await response.json()
     console.log('Tables response', data)

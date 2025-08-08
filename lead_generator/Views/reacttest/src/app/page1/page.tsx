@@ -249,16 +249,15 @@ export default function TestDOMExtractorPage() {
         <section className='mb-8'>
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Scraping Controls</h2>
           <div className='flex flex-wrap justify-center gap-3'>
-            <button className='bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors' onClick={scrapeDivs}>Scrape Divs</button>
-            <button className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors' onClick={scrapeWithConfig}>General Config</button>
-            <button className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors' onClick={scrapeDivs}>Divs</button>
-            <button className='bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors' onClick={scrapeParagraphs}>Paragraphs</button>
-            <button className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors' onClick={scrapeListItems}>List Items</button>
-            <button className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors' onClick={scrapeImages}>Images</button>
-            <button className='bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors' onClick={scrapeDataAttributes}>Data Attributes</button>
-            <button className='bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors' onClick={scrapeJsonLd}>JSON-LD</button>
-            <button className='bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors' onClick={scrapeAddress}>Address</button>
-            <button className='bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors' onClick={scrapeTables}>Tables</button>
+            <button className='bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer' onClick={scrapeDivs}>Scrape Divs</button>
+            <button className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer' onClick={scrapeWithConfig}>General Config</button>
+            <button className='bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer' onClick={scrapeParagraphs}>Paragraphs</button>
+            <button className='bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors cursor-pointer' onClick={scrapeListItems}>List Items</button>
+            <button className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer' onClick={scrapeImages}>Images</button>
+            <button className='bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer' onClick={scrapeDataAttributes}>Data Attributes</button>
+            <button className='bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors cursor-pointer' onClick={scrapeJsonLd}>JSON-LD</button>
+            <button className='bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors cursor-pointer' onClick={scrapeAddress}>Address</button>
+            <button className='bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors cursor-pointer' onClick={scrapeTables}>Tables</button>
           </div>
         </section>
         
