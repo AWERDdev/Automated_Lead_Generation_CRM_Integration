@@ -5,7 +5,8 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def extract_from_address(soup, element_name="address", element_class=None, patterns=None):
+def extract_from_address(soup, element_name="address", element_class=None, source_element=None, 
+                       source_class=None, patterns=None, fields=None):
     """Extract leads from address blocks"""
     if soup is None:
         return []

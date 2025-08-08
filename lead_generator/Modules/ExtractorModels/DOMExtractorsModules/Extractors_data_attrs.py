@@ -5,7 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def extract_from_data_attrs(soup, element_name="div", element_class="employee-card", 
-                           required_attrs=None, attributes=None):
+                           required_attrs=None, attributes=None, fields=None):
     """Extract leads from data attributes"""
     if soup is None:
         return []
