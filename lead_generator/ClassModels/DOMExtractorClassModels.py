@@ -81,7 +81,7 @@ class extract_from_data_attrsConfig(BaseModel):
     element_class: Optional[str] = None
     required_attrs: Optional[List[str]] = None
     attributes: Optional[Dict[str, Any]] = None
-    fields: Optional[Dict[str, Any]] = None
+    # fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
     dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
