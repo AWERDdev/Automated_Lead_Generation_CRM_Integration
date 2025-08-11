@@ -18,6 +18,9 @@ def Welcome_Message():
 @router.post("/divs")
 def DOMLEADS(url:str = Body(...) , config:DivExtractorConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
     results = extract_from_divs(soup, element_name=config.element_name, element_class=config.element_class, 
                                source_element=config.source_element, source_class=config.source_class, 
                                fields=config.fields, multiple_elements=config.multiple_elements,
@@ -29,6 +32,9 @@ def DOMLEADS(url:str = Body(...) , config:DivExtractorConfig = Body(...)):
 @router.post("/paragraphs")
 def DOMLEADS(url:str = Body(...) , config:ParagraphExtractorConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
     results = extract_from_paragraphs(soup, element_name=config.element_name, element_class=config.element_class, 
                                     patterns=config.patterns, fields=config.fields, 
                                     multiple_elements=config.multiple_elements,
@@ -41,6 +47,9 @@ def DOMLEADS(url:str = Body(...) , config:ParagraphExtractorConfig = Body(...)):
 @router.post("/list_items")
 def DOMLEADS(url:str = Body(...) , config:ListItemExtractorConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
     results = extract_from_list_items(soup, element_name=config.element_name, element_class=config.element_class, 
                                     item_element=config.item_element, fields=config.fields,
                                     multiple_elements=config.multiple_elements,
@@ -53,6 +62,10 @@ def DOMLEADS(url:str = Body(...) , config:ListItemExtractorConfig = Body(...)):
 @router.post("/images")
 def DOMLEADS(url:str = Body(...) , config:extract_from_imagesConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
+    
     results = extract_from_images(soup, element_name=config.element_name, element_class=config.element_class, 
                                 image_element=config.image_element, caption_element=config.caption_element, 
                                 fields=config.fields, multiple_elements=config.multiple_elements,
@@ -65,9 +78,13 @@ def DOMLEADS(url:str = Body(...) , config:extract_from_imagesConfig = Body(...))
 @router.post("/extract_from_data_attrs")
 def DOMLEADS(url:str = Body(...) , config:extract_from_data_attrsConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
+    
     results = extract_from_data_attrs(soup, element_name=config.element_name, element_class=config.element_class, 
                                     required_attrs=config.required_attrs, attributes=config.attributes, 
-                                    fields=config.fields, multiple_elements=config.multiple_elements,
+                                    multiple_elements=config.multiple_elements,
                                     multiple_source_elements=config.multiple_source_elements, 
                                     dynamic_fields=config.dynamic_fields)
     print(f"results from the Data attrs scraper {results}")
@@ -76,6 +93,10 @@ def DOMLEADS(url:str = Body(...) , config:extract_from_data_attrsConfig = Body(.
 @router.post("/extract_from_json_ld")
 def DOMLEADS(url:str = Body(...) , config:extract_from_json_ld = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
+    
     results = extract_from_json_ld(soup, element_name=config.element_name, type_attr=config.type_attr, 
                                  schema_type=config.schema_type, fields=config.fields,
                                  multiple_elements=config.multiple_elements,
@@ -87,6 +108,10 @@ def DOMLEADS(url:str = Body(...) , config:extract_from_json_ld = Body(...)):
 @router.post("/extract_from_address")
 def DOMLEADS(url:str = Body(...) , config:extract_from_addressConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
+    
     results = extract_from_address(soup, element_name=config.element_name, element_class=config.element_class, 
                                  source_element=config.source_element, source_class=config.source_class, 
                                  fields=config.fields, patterns=config.patterns,
@@ -99,6 +124,10 @@ def DOMLEADS(url:str = Body(...) , config:extract_from_addressConfig = Body(...)
 @router.post("/extract_from_table")
 def DOMLEADS(url:str = Body(...) , config:extract_from_tablesConfig = Body(...)):
     soup = get_soup(url)
+    print(f"Soup object created: {soup}")
+    print(f"Config received: {config}")
+    print(f"URL received: {url}")
+    
     results = extract_from_tables(soup, element_name=config.element_name, element_class=config.element_class, 
                                 row_element=config.row_element, cell_element=config.cell_element, 
                                 header_rows=config.header_rows, fields=config.fields,

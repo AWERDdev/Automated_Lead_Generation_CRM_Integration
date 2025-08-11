@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional,Union
 
 class genConfig(BaseModel):
     element_name: Optional[str] = None
@@ -19,7 +19,7 @@ class genConfig(BaseModel):
     extractors: Optional[List[str]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class DivExtractorConfig(BaseModel):
     element_name: Optional[str] = None
@@ -30,7 +30,7 @@ class DivExtractorConfig(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class ParagraphExtractorConfig(BaseModel):
     extractor: Optional[str] = None
@@ -40,7 +40,7 @@ class ParagraphExtractorConfig(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class ListItemExtractorConfig(BaseModel):
     element_name: Optional[str] = None    
@@ -50,7 +50,7 @@ class ListItemExtractorConfig(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_tablesConfig(BaseModel):
     element_name: Optional[str] = None
@@ -62,7 +62,7 @@ class extract_from_tablesConfig(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_imagesConfig(BaseModel):
     element_name: Optional[str] = None
@@ -73,18 +73,18 @@ class extract_from_imagesConfig(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_data_attrsConfig(BaseModel):
     element_name: Optional[str] = None
-    extractor: Optional[str] = None
+    # extractor: Optional[str] = None
     element_class: Optional[str] = None
     required_attrs: Optional[List[str]] = None
     attributes: Optional[Dict[str, Any]] = None
-    # fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    # dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_json_ld(BaseModel):
     element_name: Optional[str] = None
@@ -94,7 +94,7 @@ class extract_from_json_ld(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_addressConfig(BaseModel):
     element_name: Optional[str] = None
@@ -106,4 +106,4 @@ class extract_from_addressConfig(BaseModel):
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
+    dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None

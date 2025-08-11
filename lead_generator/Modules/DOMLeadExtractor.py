@@ -1,5 +1,4 @@
 import logging
-import re
 
 from Modules.ExtractorModels.DOMExtractorsModules.FetchSoup import get_soup
 from Modules.ExtractorModels.DOMExtractorsModules.Extractors_Tables import extract_from_tables

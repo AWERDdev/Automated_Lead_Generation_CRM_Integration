@@ -9,7 +9,6 @@ def extract_from_data_attrs(
     element_class=None,
     required_attrs=None,
     attributes=None,
-    # fields=None,
     multiple_elements=None,
     multiple_source_elements=None,
     dynamic_fields=None
