@@ -1,6 +1,5 @@
 import logging
 
-# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def extract_from_data_attrs(
@@ -13,27 +12,10 @@ def extract_from_data_attrs(
     multiple_source_elements=None,
     dynamic_fields=None
 ):
-    # # Safety checks
-    # if not element_name and not multiple_elements:
-    #     logging.warning("No element_name or multiple_elements provided.")
-    #     return [{"error": "No element_name or multiple_elements provided."}]
-    
-    # if required_attrs is None:
-    #     logging.warning("required_attrs is None. Nothing to extract.")
-    #     return [{"error": "required_attrs is None. Please check the input."}]
-
-    # # Safety checks
-    # if not attributes and not dynamic_fields:
-    #     logging.warning("No attributes or dynamic_fields provided.")
-    #     return [{"error": "No attributes or dynamic_fields provided."}]
-
-    # Set fallbacks
     required_attrs = required_attrs or ["data-name", "data-email"]
-    attributes = attributes or {
-        "name": "data-name",
-        "email": "data-email",
-        "position": "data-position"
-    }
+
+    # Merge attributes + dynamic_fields (dynamic_fields will overwrite attributes if same keys)
+    attributes = {**(attributes or {}), **(dynamic_fields or {})}
 
     elements_to_search = multiple_elements or ([element_name] if element_name else [])
     source_elements_to_search = multiple_source_elements or ([element_name] if element_name else [])
@@ -42,11 +24,10 @@ def extract_from_data_attrs(
 
     for current_element in elements_to_search:
         if not current_element:
-            continue  # Skip None entries
+            continue
         entries = soup.find_all(current_element, class_=element_class)
 
         for entry_index, entry in enumerate(entries, 1):
-            # Skip if required attributes are missing
             if not all(entry.has_attr(attr) for attr in required_attrs):
                 logging.debug(f"Skipping entry #{entry_index} due to missing required attributes")
                 continue
@@ -55,26 +36,19 @@ def extract_from_data_attrs(
             logging.debug(f"Processing entry #{entry_index}")
 
             for field_name, attr_name in attributes.items():
-                value = entry.get(attr_name, "N/A")
+                value = entry.attrs.get(attr_name, "N/A")  # safer than entry.get()
 
-                # Handle transformations
-                transform = dynamic_fields.get(field_name, {}).get("transform") if dynamic_fields else None
-
-                if transform:
-                    if transform == "mailto:" and isinstance(value, str) and value.startswith("mailto:"):
-                        value = value.replace("mailto:", "")
-                    elif callable(transform):
-                        value = transform(value)
+                if value == "N/A":
+                    logging.debug(f"Attribute '{attr_name}' not found in entry #{entry_index}")
+                    continue
 
                 lead[field_name] = value
 
-            # Try to extract extra info from child elements
             for source_elem in source_elements_to_search:
                 child_element = entry.find(source_elem, class_=element_class) if element_class else entry.find(source_elem)
                 if child_element:
                     lead[f"{source_elem}_text"] = child_element.get_text(strip=True)
 
-            # Only add meaningful leads
             if any(value != "N/A" for key, value in lead.items() if key != "source"):
                 leads.append(lead)
 
