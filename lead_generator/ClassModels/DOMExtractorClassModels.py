@@ -91,7 +91,6 @@ class extract_from_json_ld(BaseModel):
     schema_type: Optional[str] = None
     fields: Optional[Dict[str, Any]] = None
     multiple_elements: Optional[List[str]] = None
-    multiple_source_elements: Optional[List[str]] = None
     dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_addressConfig(BaseModel):

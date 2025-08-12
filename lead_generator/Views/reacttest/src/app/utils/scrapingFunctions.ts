@@ -191,7 +191,6 @@ export const ScrapeJsonLd = async () => {
     type_attr: "application/ld+json",
     schema_type: "Person",
     multiple_elements: ["script", "div"],
-    multiple_source_elements: ["script", "div"],
     dynamic_fields: {
       "name": "name",
       "email": "email",

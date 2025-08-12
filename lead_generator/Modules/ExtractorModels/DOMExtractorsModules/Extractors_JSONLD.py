@@ -17,12 +17,29 @@ def _get_nested(data, path, default="N/A"):
 
 
 
-def extract_from_json_ld(soup, element_name="script", type_attr="application/ld+json",
-                         schema_type=("Person",), fields=None):
+def extract_from_json_ld(
+            soup,
+            element_name=None,
+            type_attr=None,
+            schema_type=None,
+            fields=None,
+            multiple_elements=None,
+            dynamic_fields= None
+            ):
     """Extract structured data from JSON-LD."""
     if soup is None:
         logging.warning("No BeautifulSoup object provided.")
         return []
+        # Use dynamic fields if provided
+    if dynamic_fields:
+        fields = dynamic_fields
+        print(f"these are dynamic fields{dynamic_fields}")
+        print(f"these are  fields{fields}")
+
+    elements_to_search = multiple_elements or [element_name]
+    print(f"these are elements to search{elements_to_search}")
+    print(f"these are multible elements{multiple_elements}")
+    print(f"these are element{element_name}")   
     
     if isinstance(schema_type, str):
         schema_type = (schema_type,)
@@ -38,7 +55,7 @@ def extract_from_json_ld(soup, element_name="script", type_attr="application/ld+
 
     logging.info(f"Searching for JSON-LD <{element_name} type={type_attr}> elements...")
     leads = []
-    scripts = soup.find_all(element_name, type=type_attr)
+    scripts = soup.find_all(elements_to_search, type=type_attr)
     
     for script in scripts:
         try:

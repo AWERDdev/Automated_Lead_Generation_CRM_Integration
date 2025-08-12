@@ -168,7 +168,6 @@ async def DOMLEADS(url: str = Body(...), config: extract_from_json_ld = Body(...
             schema_type=config.schema_type,
             fields=config.fields,
             multiple_elements=config.multiple_elements,
-            multiple_source_elements=config.multiple_source_elements,
             dynamic_fields=config.dynamic_fields
         )
         return {"message": "DOM leads scraped", "Results": results}
