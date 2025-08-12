@@ -1,44 +1,6 @@
-// Scraping functions for DOM lead extraction
 
-// export const scrapeWithConfig = async () => {
-//   console.log("scraping with general config")
-//   const url = 'http://localhost:3000/page1'
-//   const config = {
-//     element_class: "business-entry",
-//     source_element: "div",
-//     source_class: "mt-2",
-//     element_name: "div",
-//     fields: "name,email,phone",
-//     multiple_elements: ["div", "span", "p"],
-//     multiple_source_elements: ["h1", "h2", "h3", "p"],
-//     dynamic_fields: {
-//       "name": {"element": "span", "class": "name"},
-//       "email": {"element": "span", "class": "email"},
-//       "phone": {"element": "span", "class": "phone"},
-//       "role": {"element": "span", "class": "role"},
-//       "company": {"element": "span", "class": "company"}
-//     },
-//     extractors: {
-//       "divs":{}
-//   }
-//   }
 
-//   try {
-//     const response = await fetch(`http://127.0.0.1:8000/DOMLeads/config`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({ url, config })
-//     })
-//     const data = await response.json()
-//     console.log('General config response', data)
-//   } catch(error) {
-//     console.log(`Failed to scrape with config: ${error}`)
-//   }
-// }
-
-export const scrapeDivs = async () => {
+export const ScrapeDivs = async () => {
   console.log("scraping divs")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -69,11 +31,11 @@ export const scrapeDivs = async () => {
     const data = await response.json()
     console.log('Divs response', data)
   } catch(error) {
-    console.log(`Failed to scrape divs: ${error}`)
+    console.log(`Failed to Scrape divs: ${error}`)
   }
 }
 
-export const scrapeParagraphs = async () => {
+export const ScrapeParagraphs = async () => {
   console.log("scraping paragraphs")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -109,11 +71,11 @@ export const scrapeParagraphs = async () => {
     const data = await response.json()
     console.log('Paragraphs response', data)
   } catch(error) {
-    console.log(`Failed to scrape paragraphs: ${error}`)
+    console.log(`Failed to Scrape paragraphs: ${error}`)
   }
 }
 
-export const scrapeListItems = async () => {
+export const ScrapeListItems = async () => {
   console.log("scraping list items")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -143,11 +105,11 @@ export const scrapeListItems = async () => {
     const data = await response.json()
     console.log('List items response', data)
   } catch(error) {
-    console.log(`Failed to scrape list items: ${error}`)
+    console.log(`Failed to Scrape list items: ${error}`)
   }
 }
 
-export const scrapeImages = async () => {
+export const ScrapeImages = async () => {
   console.log("scraping images")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -177,11 +139,11 @@ export const scrapeImages = async () => {
     const data = await response.json()
     console.log('Images response', data)
   } catch(error) {
-    console.log(`Failed to scrape images: ${error}`)
+    console.log(`Failed to Scrape images: ${error}`)
   }
 }
 
-export const scrapeDataAttributes = async () => {
+export const ScrapeDataAttributes = async () => {
   console.log("scraping data attributes")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -217,11 +179,11 @@ export const scrapeDataAttributes = async () => {
     const data = await response.json()
     console.log('Data attributes response', data)
   } catch(error) {
-    console.log(`Failed to scrape data attributes: ${error}`)
+    console.log(`Failed to Scrape data attributes: ${error}`)
   }
 }
 
-export const scrapeJsonLd = async () => {
+export const ScrapeJsonLd = async () => {
   console.log("scraping JSON-LD")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -254,11 +216,11 @@ export const scrapeJsonLd = async () => {
     const data = await response.json()
     console.log('JSON-LD response', data)
   } catch(error) {
-    console.log(`Failed to scrape JSON-LD: ${error}`)
+    console.log(`Failed to Scrape JSON-LD: ${error}`)
   }
 }
 
-export const scrapeAddress = async () => {
+export const ScrapeAddress = async () => {
   console.log("scraping address")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -298,11 +260,11 @@ export const scrapeAddress = async () => {
     const data = await response.json()
     console.log('Address response', data)
   } catch(error) {
-    console.log(`Failed to scrape address: ${error}`)
+    console.log(`Failed to Scrape address: ${error}`)
   }
 }
 
-export const scrapeTables = async () => {
+export const ScrapeTables = async () => {
   console.log("scraping tables")
   const url = 'http://localhost:3000/page1'
   const config = {
@@ -326,6 +288,6 @@ export const scrapeTables = async () => {
     const data = await response.json()
     console.log('Tables response', data)
   } catch(error) {
-    console.log(`Failed to scrape tables: ${error}`)
+    console.log(`Failed to Scrape tables: ${error}`)
   }
 } 

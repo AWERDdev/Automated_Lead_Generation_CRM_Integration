@@ -10,9 +10,6 @@ def extract_from_divs(soup, element_name="div", element_class="business-entry",
                       fields=None, multiple_elements=None, multiple_source_elements=None, 
                       dynamic_fields=None):
     """Extract leads from div elements with business-entry class"""
-    if soup is None:
-        logging.warning("Soup is None. Nothing to extract.")
-        return []
 
     logging.info(f"Extracting data from <{element_name}> with class '{element_class}'")
     leads = []

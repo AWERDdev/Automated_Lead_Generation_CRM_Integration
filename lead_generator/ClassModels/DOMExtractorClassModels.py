@@ -77,13 +77,11 @@ class extract_from_imagesConfig(BaseModel):
 
 class extract_from_data_attrsConfig(BaseModel):
     element_name: Optional[str] = None
-    # extractor: Optional[str] = None
     element_class: Optional[str] = None
     required_attrs: Optional[List[str]] = None
-    attributes: Optional[Dict[str, Any]] = None
+    attributes: Optional[Dict[str, str]] = None
     multiple_elements: Optional[List[str]] = None
     multiple_source_elements: Optional[List[str]] = None
-    # dynamic_fields: Optional[Dict[str, Dict[str, Any]]] = None
     dynamic_fields: Optional[Dict[str, Union[str, Dict[str, Any]]]] = None
 
 class extract_from_json_ld(BaseModel):

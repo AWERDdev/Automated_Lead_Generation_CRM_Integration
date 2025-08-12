@@ -13,15 +13,19 @@ def extract_from_data_attrs(
     multiple_source_elements=None,
     dynamic_fields=None
 ):
-    """Extract leads directly from data-* attributes"""
-    if soup is None:
-        logging.warning("Soup is None. Nothing to extract.")
-        return []
+    # # Safety checks
+    # if not element_name and not multiple_elements:
+    #     logging.warning("No element_name or multiple_elements provided.")
+    #     return [{"error": "No element_name or multiple_elements provided."}]
+    
+    # if required_attrs is None:
+    #     logging.warning("required_attrs is None. Nothing to extract.")
+    #     return [{"error": "required_attrs is None. Please check the input."}]
 
-    # Safety checks
-    if not element_name and not multiple_elements:
-        logging.warning("No element_name or multiple_elements provided.")
-        return []
+    # # Safety checks
+    # if not attributes and not dynamic_fields:
+    #     logging.warning("No attributes or dynamic_fields provided.")
+    #     return [{"error": "No attributes or dynamic_fields provided."}]
 
     # Set fallbacks
     required_attrs = required_attrs or ["data-name", "data-email"]
