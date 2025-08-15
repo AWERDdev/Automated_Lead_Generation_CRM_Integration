@@ -1,0 +1,27 @@
+[package]
+name = "main_cargo"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rust_processer"
+path = "src/processer.rs"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "rust_processer"
+path = "src/main.rs"
+
+[dependencies]
+hmac = "0.12"
+jwt = "0.16"
+sha2 = "0.10"
+chrono = "0.4"
+argon2 = "0.5"
+rand_core = { version = "0.6", features = ["std"] }
+wasm-bindgen = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand = "0.8"
+getrandom = { version = "0.2", features = ["js"] }
+dashmap = "6.1.0"

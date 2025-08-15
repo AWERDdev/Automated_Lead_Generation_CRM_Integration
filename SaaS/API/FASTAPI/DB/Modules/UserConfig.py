@@ -1,5 +1,4 @@
 import psycopg2
-
 from dotenv import load_dotenv
 import os
 
@@ -9,10 +8,10 @@ load_dotenv()
 def database_exists(dbname):
     """Check if a database exists"""
     conn = psycopg2.connect(
-        host="localhost",
-        dbname="postgres",  # Connect to default postgres database
-        user="postgres",
-        password="1231AWERD1"
+        host= os.getenv("host"),
+        dbname= os.getenv("dbname"),  # Connect to default postgres database
+        user= os.getenv("postgres"),
+        password= os.getenv("password")
     )
     conn.autocommit = True  # This is needed for creating databases
     
