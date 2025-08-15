@@ -1,64 +1,61 @@
-import Navbar from "@/components/NavBar";
-import { Buttonstyle1 , Buttonstyle2 } from "@/components/ButtonStyles";
-import  Card  from '@/components/Card'
-import BNavbar from "@/components/BottomBar";
-import Image from "next/image";
-const IntroPage: React.FC = () => {
+'use client';
+
+import Navbar from "@/Components/NavBar";
+import { ButtonStyle1 , ButtonStyle2 } from "@/Components/ButtonStyles";
+import BottomNav from "@/Components/BottomNav"
+import Card from "@/Components/Card";
+import { Box, Search, Building, Truck, Shield, Headphones } from "lucide-react";
+import { useRouter } from 'next/navigation';
+
+const Home: React.FC = () => {
+  const router = useRouter();
+  
+  const goToSignup = () => {
+    router.push('/UserSignup');
+  };
+
+  const goToLogin = () => {
+    router.push('/UserLogin');
+  };
+
   return (
-    <>
-    <main className="flex flex-col min-h-screen">
-      {/* Header/Nav */}
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b">
-        <Navbar/>
-      </header>
-      {/* Hero Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-        <div className="container px-4 md:px-6 flex flex-col items-center space-y-4 text-center">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">Automate Your Lead Generation</h1>
-          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">Transform your sales process with AI-powered lead generation and seamless CRM integration. Capture, nurture, and convert leads automatically.</p>
-          <div className="space-x-4">
-            <Buttonstyle1 ButtonFUNC={() => {console.log('hello world')}} buttonText="Get Started Free"/>
-            <Buttonstyle2 ButtonFUNC={() => {console.log('hello world')}} buttonText="Learn More"/>
+    <main className="bg-gradient-to-b from-blue-50 to-green-50 min-h-screen flex flex-col">
+      <Navbar />
+      <section className="flex-1 flex flex-col items-center justify-center py-16 px-4">
+        {/* Hero Section */}
+        <div className="w-full max-w-3xl mx-auto text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4">
+            Medical Supply <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Made Simple</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 mb-8">
+            Connect hospitals and pharmacies with reliable medicine suppliers. Real-time inventory, seamless ordering, and professional healthcare solutions.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <ButtonStyle1 ButtonText='Get Started' onClick={goToSignup} />
           </div>
         </div>
-      </section>
-      {/* Features Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
-            <Card 
-              title="Smart Lead Capture" 
-              ICON={<Image src="/globe.svg" alt="Smart Lead Capture" className="h-10 w-10 mb-2 text-primary" />} 
-              INFO="Automatically identify and capture high-quality leads from multiple sources. Our AI analyzes visitor behavior, social media interactions, and engagement patterns to identify the most promising prospects." 
-            />
-            <Card 
-              title="Automated Workflows" 
-              ICON={<Image src="/file.svg" alt="Automated Workflows" className="h-10 w-10 mb-2 text-primary" />} 
-              INFO="Set up intelligent nurturing sequences that run on autopilot. Create personalized email sequences, follow-up reminders, and task assignments that adapt based on lead behavior and engagement." 
-            />
-            <Card 
-              title="Advanced Analytics" 
-              ICON={<Image src="/window.svg" alt="Advanced Analytics" className="h-10 w-10 mb-2 text-primary" />} 
-              INFO="Track performance and optimize your lead generation strategy. Get detailed insights into lead quality, conversion rates, and ROI with comprehensive dashboards and reporting tools." 
-            />
+        {/* Features Section */}
+        <div className="w-full max-w-5xl mx-auto mb-20">
+          <h2 className="text-3xl font-bold text-center mb-2">Why Choose MediSupply?</h2>
+          <p className="text-gray-500 text-center mb-8">Everything you need to manage medical supplies efficiently and reliably</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+            <Card Title={<span className="text-blue-600 font-bold">Real-time Inventory</span>} P='Track medicine stock levels in real-time across all your locations' ICON={<Box className="text-blue-600" size={40} />} />
+            <Card Title={<span className="text-green-600 font-bold">Smart Search</span>} P='Find medicines quickly with our advanced search and filtering system' ICON={<Search className="text-green-600" size={40} />} />
+            <Card Title={<span className="text-purple-600 font-bold">Multi-Location</span>} P='Manage multiple hospitals and pharmacy locations from one dashboard' ICON={<Building className="text-purple-600" size={40} />} />
+            <Card Title={<span className="text-orange-500 font-bold">Fast Delivery</span>} P='Reliable delivery network ensuring medicines reach you on time' ICON={<Truck className="text-orange-500" size={40} />} />
+            <Card Title={<span className="text-red-600 font-bold">Secure & Compliant</span>} P='HIPAA compliant with enterprise-grade security for all transactions' ICON={<Shield className="text-red-600" size={40} />} />
+            <Card Title={<span className="text-teal-600 font-bold">24/7 Support</span>} P='Round-the-clock customer support for all your medical supply needs' ICON={<Headphones className="text-teal-600" size={40} />} />
           </div>
         </div>
-      </section>
-      {/* CTA Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6 flex flex-col items-center space-y-4 text-center">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Ready to Transform Your Sales Process?</h1>
-          <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">Join thousands of businesses already using our platform to generate more qualified leads.</p>
-          <Buttonstyle1 ButtonFUNC={() => {console.log('hello world')}} buttonText="Start Your Free Trial"/>
+        {/* Call to Action Section */}
+        <div className="w-full max-w-2xl mx-auto text-center justify-center items-center mt-12 mb-8">
+          <h2 className="text-3xl font-bold mb-2">Ready to Transform Your Medical Supply Chain?</h2>
+          <p className="text-gray-600 mb-6">Join thousands of healthcare providers who trust MediSupply for their medicine needs</p>
+          <ButtonStyle2 className="grid justify-self-center" ButtonText='Start Free Trial' onClick={goToLogin} />
         </div>
       </section>
-      {/* Footer/BottomBar */}
-      <footer>
-        <BNavbar/>
-      </footer>
+      <BottomNav />
     </main>
-    </>
   );
 }
-
-export default IntroPage
+export default Home

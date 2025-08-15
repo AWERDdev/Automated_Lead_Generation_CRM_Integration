@@ -44,20 +44,20 @@ pub fn verify_password_wasm(password: &str, hash: &str) -> Result<bool, JsValue>
         .map_err(|e| JsValue::from_str(&format!("{:?}", e)))
 }
 
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn text_captcha_wasm() -> Result<bool, JsValue> {
-    Ok(text_captcha())
-}
+// #[cfg(target_arch = "wasm32")]
+// #[wasm_bindgen]
+// pub fn text_captcha_wasm() -> Result<bool, JsValue> {
+//     Ok(text_captcha())
+// }
 
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn rate_limiter_wasm(user: &str) -> Result<bool, JsValue> {
-    Ok(RateLimiter::new(10, 60).is_allowed(user))
-}
+// #[cfg(target_arch = "wasm32")]
+// #[wasm_bindgen]
+// pub fn rate_limiter_wasm(user: &str) -> Result<bool, JsValue> {
+//     Ok(RateLimiter::new(10, 60).is_allowed(user))
+// }
 
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn delay_on_failure_wasm(failed_attempts: u32) -> Result<(), JsValue> {
-    Ok(delay_on_failure(failed_attempts))
-}
+// #[cfg(target_arch = "wasm32")]
+// #[wasm_bindgen]
+// pub fn delay_on_failure_wasm(failed_attempts: u32) -> Result<(), JsValue> {
+//     Ok(delay_on_failure(failed_attempts))
+// }
