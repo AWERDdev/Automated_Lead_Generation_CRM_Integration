@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Userschema = require('../../Models/UserModel.js')
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
-const mongoose = require('mongoose');
 
 router.get('/',(req,res)=>{
     console.log('Signup Route called')

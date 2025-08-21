@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const UserSchema = require('../../Models/UserModel.js')
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 
 // In-memory failed attempts tracker (for production, use Redis or DB) - commented out

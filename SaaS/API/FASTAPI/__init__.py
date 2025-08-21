@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from Routes.DataReciver import router as data_receiver_router
 
 from dotenv import load_dotenv
 import os
@@ -24,6 +25,7 @@ app.add_middleware(
 def welcome_message():
     return{"message":"welcome to the DOM Leads Extractor Python API Main Route"}
 
+app.include_router(data_receiver_router)
 
 if __name__ == "__main__":
     print("API is running")
