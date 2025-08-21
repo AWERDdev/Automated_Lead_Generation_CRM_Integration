@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from Routes.DataReciver import router as data_receiver_router  # check spelling: Reciver vs Receiver
-
+from DB.DB import router as db_router
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -25,6 +25,7 @@ def welcome_message():
 
 # ✅ Correct include
 app.include_router(data_receiver_router)
+app.include_router(db_router)
 
 if __name__ == "__main__":
     import uvicorn
