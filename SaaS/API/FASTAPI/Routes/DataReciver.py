@@ -8,7 +8,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-router.get("/")
+@router.get("/")
 def Message():
     return {"message": "Data Receiver Endpoint has been reached"}
 
@@ -27,7 +27,7 @@ def read_data(AdminData: AdminModel = Body(...)):
     return {"message": "Admin Data has been received","AdminData": AdminData}
     
 
-router.get("/Verfiy_Email/{email}")
+@router.get("/Verfiy_Email")
 def verify_Email(email: str):
     if not email:
         raise HTTPException(status_code=400, detail="Email is required")
