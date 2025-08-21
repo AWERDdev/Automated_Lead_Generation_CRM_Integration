@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
-
+const axios = require('axios')
 router.get('/',(req,res)=>{
     console.log('Signup Route called')
     res.json({ message: "this is signup route" })
@@ -38,7 +38,10 @@ router.post('/Signup', async (req, res) => {
         
         // Check for existing user with same email
         console.log("checking if user email exists")
-        const existingUserEmail = await Userschema.findOne({ email });
+        // const existingUserEmail = await Userschema.findOne({ email });
+        const existingUserEmail = axios.get("http://127.0.0.1:8000/data_receiver/verify_Email", {
+            params: { email }
+        })
         if (existingUserEmail) {
             return res.status(400).json({
                 success: false,

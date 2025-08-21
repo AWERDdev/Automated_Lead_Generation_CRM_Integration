@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
-
+const axios = require('axios')
 // In-memory failed attempts tracker (for production, use Redis or DB) - commented out
 // const failedAttemptsMap = {};
 
@@ -32,7 +32,9 @@ router.post('/login', async (req, res) => {
 
     try {
         // Find user by email
-        const user = await UserSchema.findOne({ email })
+        // const user = await UserSchema.findOne({ email })
+        const user = axios.get()
+
             if (!user) {
         return res.status(401).json({
             success: false,
