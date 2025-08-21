@@ -68,23 +68,26 @@ def create_table_Users(conn):
             CREATE TABLE IF NOT EXISTS Users (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
+                username: TEXT UNIQUE NOT NULL,
+                password: TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
+                is_admin BOOLEAN DEFAULT FALSE,
             )
             """
         )
         conn.commit()
 
-def insert_User(conn, name, email, phone, address ):
+def insert_User(conn, name, email, phone, address, password , Admin):
     with conn.cursor() as cur:
         cur.execute(
             """
-            INSERT INTO Users (name, email, phone, address )
-            VALUES (%s, %s, %s, %s )
+            INSERT INTO Admins (name, email, phone, address )
+            VALUES (%s, %s, %s, %s , %s, %s)
             RETURNING id;
             """,
-            (name, email, phone, address )
+            (name, email, phone, address ,password , Admin)
         )
         user_id = cur.fetchone()[0]
         conn.commit()

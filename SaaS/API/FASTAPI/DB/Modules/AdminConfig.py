@@ -70,6 +70,7 @@ def create_table_Admin(conn):
                 Admin_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
+                password: TEXT NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
                 Admin BOOLEAN NOT NULL
@@ -78,15 +79,15 @@ def create_table_Admin(conn):
         )
         conn.commit()
 
-def insert_User(conn, name, email, phone, address ):
+def insert_User(conn, name, email, phone, address, password , Admin):
     with conn.cursor() as cur:
         cur.execute(
             """
             INSERT INTO Admins (name, email, phone, address )
-            VALUES (%s, %s, %s, %s )
+            VALUES (%s, %s, %s, %s , %s, %s)
             RETURNING id;
             """,
-            (name, email, phone, address )
+            (name, email, phone, address ,password , Admin)
         )
         user_id = cur.fetchone()[0]
         conn.commit()
