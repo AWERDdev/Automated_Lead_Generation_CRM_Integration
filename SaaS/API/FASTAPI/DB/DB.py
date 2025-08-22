@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from Modules import DBSetup
-from Modules import UserConfig
-from Modules import AdminConfig
+from DB.Modules.DBSetup import connect_DB, enable_pgcrypto,enable_citext, enable_pg_trgm
+from DB.Modules.UserConfig import create_table_Users
+from DB.Modules.AdminConfig import create_table_Admin
 
 router = APIRouter(
     prefix="/db_setup",
@@ -15,11 +15,14 @@ def DBMessage():
 @router.get("/Setup")
 def SetupDB():
     
-    conn = DBSetup.connect_DB()
-    DBSetup.enable_pgcrypto(conn)
-    UserConfig.create_table_Users(conn)
-    AdminConfig.create_table_Admin(conn)
+    conn = connect_DB()
+    enable_pgcrypto(conn)
+    enable_citext(conn)
+    enable_pg_trgm(conn)
+    create_table_Users(conn)
+    create_table_Admin(conn)
     conn.close()
+    
     print("Database setup completed successfully.")
     return {"message": "Database setup completed successfully."}
     

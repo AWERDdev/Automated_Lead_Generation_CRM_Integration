@@ -60,3 +60,14 @@ def enable_pgcrypto(conn):
     with conn.cursor() as cur:
         cur.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto";')
         conn.commit()
+        
+def enable_citext(conn):
+    with conn.cursor() as cur:
+        cur.execute('CREATE EXTENSION IF NOT EXISTS "citext";')
+        conn.commit()
+        
+def enable_pg_trgm(conn):
+    with conn.cursor() as cur:
+        cur.execute('CREATE EXTENSION IF NOT EXISTS "pg_trgm";')
+        conn.commit()
+        
