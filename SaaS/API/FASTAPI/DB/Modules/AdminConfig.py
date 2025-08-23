@@ -5,8 +5,9 @@ def create_table_Admin(conn):
             CREATE TABLE IF NOT EXISTS Admin (
                 Admin_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
+                username TEXT UNIQUE NOT NULL,
                 email TEXT UNIQUE NOT NULL,
-                password: TEXT NOT NULL,
+                password TEXT NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
                 Admin BOOLEAN NOT NULL

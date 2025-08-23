@@ -5,12 +5,12 @@ def create_table_Users(conn):
             CREATE TABLE IF NOT EXISTS Users (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
-                username: TEXT UNIQUE NOT NULL,
-                password: TEXT NOT NULL,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
-                is_admin BOOLEAN DEFAULT FALSE,
+                Admin BOOLEAN DEFAULT FALSE,
             )
             """
         )

@@ -5,13 +5,17 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
+# ✅ Debug: check what’s being read from .env
+print("Password from .env:", repr("1231AWERD1"))
+print("1231AWERD1")
+
 def database_exists(dbname):
     """Check if a database exists"""
     conn = psycopg2.connect(
         host=os.getenv("host"),
         dbname=os.getenv("dbname"),  # connect to default DB (postgres)
         user=os.getenv("user"),
-        password=os.getenv("password")
+        password="1231AWERD1"  # ⚠️ lowercase 'password'
     )
     conn.autocommit = True
     
@@ -29,7 +33,7 @@ def create_database(dbname):
             host=os.getenv("host"),
             dbname=os.getenv("dbname"),  # still connect to default DB
             user=os.getenv("user"),
-            password=os.getenv("password")
+            password="1231AWERD1"  # ⚠️ lowercase
         )
         conn.autocommit = True
         
@@ -53,7 +57,7 @@ def connect_DB(dbname="LeadGenerator"):
         host=os.getenv("host"),
         dbname=dbname,  # use the dbname argument here
         user=os.getenv("user"),
-        password=os.getenv("password")
+        password="1231AWERD1"  # ⚠️ lowercase
     )
 
 def enable_pgcrypto(conn):
@@ -70,4 +74,3 @@ def enable_pg_trgm(conn):
     with conn.cursor() as cur:
         cur.execute('CREATE EXTENSION IF NOT EXISTS "pg_trgm";')
         conn.commit()
-        
