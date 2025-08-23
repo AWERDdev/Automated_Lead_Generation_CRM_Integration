@@ -48,7 +48,7 @@ def create_database(dbname):
     return True
 
 
-def connect_DB(dbname="LeadGenerator"):
+def connect_DB(dbname="leadgenerator"):
     """Connect to the specified database, creating it if it doesn't exist"""
     create_database(dbname)
     

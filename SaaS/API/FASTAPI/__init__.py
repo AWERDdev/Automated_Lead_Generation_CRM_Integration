@@ -4,6 +4,9 @@ from Routes.DataReciver import router as data_receiver_router  # check spelling:
 from DB.DB import router as db_router
 from dotenv import load_dotenv
 import os
+import uvicorn
+
+
 load_dotenv()
 
 # Get origins from env and split into list
@@ -28,7 +31,7 @@ app.include_router(data_receiver_router)
 app.include_router(db_router)
 
 if __name__ == "__main__":
-    import uvicorn
+
     print("API is running")
     uvicorn.run("fastAPI.__init__:app", host="0.0.0.0", port=8000, reload=True)
 

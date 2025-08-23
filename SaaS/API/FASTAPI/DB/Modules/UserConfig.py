@@ -10,7 +10,7 @@ def create_table_Users(conn):
                 email TEXT UNIQUE NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
-                Admin BOOLEAN DEFAULT FALSE,
+                Admin BOOLEAN DEFAULT FALSE
             )
             """
         )
