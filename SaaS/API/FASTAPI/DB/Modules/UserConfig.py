@@ -2,7 +2,9 @@ def create_table_Users(conn):
     with conn.cursor() as cur:
         cur.execute(
             """
-            CREATE TABLE IF NOT EXISTS Users (
+            CREATE SCHEMA IF NOT EXISTS private_data;
+
+            CREATE TABLE IF NOT EXISTS private_data.Users (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
                 username TEXT UNIQUE NOT NULL,
@@ -10,11 +12,12 @@ def create_table_Users(conn):
                 email TEXT UNIQUE NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
-                Admin BOOLEAN DEFAULT FALSE
-            )
+                admin BOOLEAN DEFAULT FALSE
+            );
             """
         )
         conn.commit()
+
 
 def insert_User(conn, name, email, phone, address, password , Admin):
     with conn.cursor() as cur:

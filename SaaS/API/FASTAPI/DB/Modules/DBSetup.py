@@ -5,9 +5,9 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-# ✅ Debug: check what’s being read from .env
-print("Password from .env:", repr("1231AWERD1"))
-print("1231AWERD1")
+# # ✅ Debug: check what’s being read from .env
+# print("Password from .env:", repr("1231AWERD1"))
+# print("1231AWERD1")
 
 def database_exists(dbname):
     """Check if a database exists"""
@@ -15,7 +15,7 @@ def database_exists(dbname):
         host=os.getenv("host"),
         dbname=os.getenv("dbname"),  # connect to default DB (postgres)
         user=os.getenv("user"),
-        password="1231AWERD1"  # ⚠️ lowercase 'password'
+        password="1231AWERD1" 
     )
     conn.autocommit = True
     
@@ -48,7 +48,7 @@ def create_database(dbname):
     return True
 
 
-def connect_DB(dbname="leadgenerator"):
+def connect_DB(dbname="LeadGenerator"):
     """Connect to the specified database, creating it if it doesn't exist"""
     create_database(dbname)
     

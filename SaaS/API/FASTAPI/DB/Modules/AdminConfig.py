@@ -2,7 +2,9 @@ def create_table_Admin(conn):
     with conn.cursor() as cur:
         cur.execute(
             """
-            CREATE TABLE IF NOT EXISTS Admin (
+            CREATE SCHEMA IF NOT EXISTS private_data;
+
+            CREATE TABLE IF NOT EXISTS private_data.Admins (
                 Admin_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
                 username TEXT UNIQUE NOT NULL,
@@ -11,7 +13,7 @@ def create_table_Admin(conn):
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
                 Admin BOOLEAN NOT NULL
-            )
+            );
             """
         )
         conn.commit()
