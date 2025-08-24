@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios')
+
 router.get('/',(req,res)=>{
     console.log('Signup Route called')
     res.json({ message: "this is signup route" })
@@ -9,7 +10,7 @@ router.get('/',(req,res)=>{
 
 router.post('/Signup', async (req, res) => {
     try {
-        const { name, password, email, phone, address } = req.body;
+        const { name, password, email, phone, address, username } = req.body;
         console.log('rust', rust)
         console.log('rust.validate_password_wasm:', typeof rust.validate_password_wasm);
         console.log('rust.default.validate_password_wasm:', typeof rust.default?.validate_password_wasm);
@@ -36,20 +37,7 @@ router.post('/Signup', async (req, res) => {
         }
         console.log(" password validated ")
         
-        // Check for existing user with same email
-        console.log("checking if user email exists")
-        // const existingUserEmail = await Userschema.findOne({ email });
-        const existingUserEmail = axios.get("http://127.0.0.1:8000/data_receiver/verify_Email", {
-            params: { email }
-        })
-        if (existingUserEmail) {
-            return res.status(400).json({
-                success: false,
-                message: "Email is already in use",
-                field: "email",
-                errorType: "duplicate"
-            });
-        }
+
         
         console.log("user doesn't exist")
         // Hash password using Rust
@@ -72,55 +60,21 @@ router.post('/Signup', async (req, res) => {
                 message: "Password hashing failed: " + error
             });
         }
-        
-        // Create new user (let MongoDB handle UserID generation)
-        console.log('saving user data')
-        let newUser;
-        try {
-            newUser = await Userschema.create({
-                name,
-                email,
-                password: hashedPassword,
-                phone,
-                address,
-            });
-        } catch (error) {
-            console.error('User creation error:', error);
-            
-            // Handle MongoDB duplicate key errors
-            if (error.code === 11000) {
-                const field = Object.keys(error.keyPattern)[0];
-                let message = "Duplicate key error";
-                let fieldName = field;
-                
-                switch (field) {
-                    case 'email':
-                        message = "Email is already in use";
-                        fieldName = "email";
-                        break;
-                    case 'UserID':
-                        message = "User ID already exists";
-                        fieldName = "userId";
-                        break;
-                    default:
-                        message = `${field} is already taken`;
-                        fieldName = field;
-                }
-                
-                return res.status(400).json({
-                    success: false,
-                    message: message,
-                    field: fieldName,
-                    errorType: "duplicate"
-                });
-            }
-            
-            return res.status(500).json({
-                success: false,
-                message: error.message || "An error occurred during signup"
-            });
+        // send data to FASTAPI server
+        const UserData = {
+            name:name,
+            email:email,
+            phone:phone,
+            address:address,
+            password:hashedPassword,
+            is_admin:false,
+            username:username
         }
-        console.log('Data saved')
+        const response = await axios.post('http://127.0.0.1:8000/data_receiver/User_Data', UserData)
+        console.log(response.data)
+        const newUser = response.User_ID
+        console.log("User data successfully sent to FastAPI. Received UserID:", newUser);
+        
         // Create JWT token using Rust
         console.log('creating token')
         let token;
@@ -154,34 +108,32 @@ router.post('/Signup', async (req, res) => {
         });
     } catch (error) {
         console.error('Signup error:', error);
-        
-        // Handle MongoDB duplicate key errors
-        if (error.code === 11000) {
-            const field = Object.keys(error.keyPattern)[0];
-            let message = "Duplicate key error";
-            let fieldName = field;
-            
-            switch (field) {
-                case 'email':
-                    message = "Email is already in use";
-                    fieldName = "email";
-                    break;
-                case 'UserID':
-                    message = "User ID already exists";
-                    fieldName = "userId";
-                    break;
-                default:
-                    message = `${field} is already taken`;
-                    fieldName = field;
-            }
-            
-            return res.status(400).json({
-                success: false,
-                message: message,
-                field: fieldName,
-                errorType: "duplicate"
-            });
-        }
+
+    // If FastAPI sent back a duplicate violation error
+    if (error.response && error.response.status === 400 && error.response.data.detail) {
+        const message = error.response.data.detail;
+
+        // You can customize like MongoDB did
+        let fieldName = "unknown";
+        if (message.includes("email")) fieldName = "email";
+        else if (message.includes("username")) fieldName = "username";
+        else if (message.includes("phone")) fieldName = "phone";
+
+        return res.status(400).json({
+            success: false,
+            message,
+            field: fieldName,
+            errorType: "duplicate"
+        });
+    }
+
+    // General fallback error
+    res.status(500).json({
+        success: false,
+        message: error.message || "An error occurred during signup"
+    });
+
+
         
         res.status(500).json({
             success: false,

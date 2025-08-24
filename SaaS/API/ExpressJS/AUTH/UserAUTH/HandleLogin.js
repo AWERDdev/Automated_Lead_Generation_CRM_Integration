@@ -13,27 +13,11 @@ router.get('/',(req,res)=>{
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
     console.log('Login attempt for:', email)
-    // const key = email; // Could also use req.ip or email+ip - commented out
-
-    // 1. Rate limiting - commented out due to WASM errors
-    // let allowed;
-    // if (typeof rust.rate_limiter_wasm === "function") {
-    //     allowed = await rust.rate_limiter_wasm(key);
-    //     console.log("Rate limiter (top-level)");
-    // } else if (typeof rust.default?.rate_limiter_wasm === "function") {
-    //     allowed = await rust.default.rate_limiter_wasm(key);
-    //     console.log("Rate limiter (default)");
-    // } else {
-    //     throw new Error("rate_limiter_wasm not found in WASM module");
-    // }
-    // if (!allowed) {
-    //     return res.status(429).send('Too many attempts. Try again later.');
-    // }
 
     try {
         // Find user by email
         // const user = await UserSchema.findOne({ email })
-        const user = axios.get()
+        const user = await axios.get('http://127.0.0.1:8000/data_receiver/Verfiy_Data', { params: { email: email, password: password } })
 
             if (!user) {
         return res.status(401).json({
@@ -101,35 +85,31 @@ router.post('/login', async (req, res) => {
         }
 
     } catch (error) {
-        console.error('Login error:', error)
-        
-        // Handle MongoDB duplicate key errors (unlikely during login but good practice)
-        if (error.code === 11000) {
-            const field = Object.keys(error.keyPattern)[0];
-            let message = "Duplicate key error";
-            let fieldName = field;
-            
-            switch (field) {
-                case 'email':
-                    message = "Email is already in use";
-                    fieldName = "email";
-                    break;
-                case 'UserID':
-                    message = "User ID already exists";
-                    fieldName = "userId";
-                    break;
-                default:
-                    message = `${field} is already taken`;
-                    fieldName = field;
-            }
-            
-            return res.status(400).json({
-                success: false,
-                message: message,
-                field: fieldName,
-                errorType: "duplicate"
-            });
-        }
+ console.error('user Login error:', error);
+
+
+    // If FastAPI sent back a duplicate violation error
+    if (error.response && error.response.status === 400 && error.response.data.detail) {
+        const message = error.response.data.detail;
+
+        // You can customize like MongoDB did
+        let fieldName = "unknown";
+        if (message.includes("email")) fieldName = "email";
+        else if (message.includes("password")) fieldName = "password";
+        return res.status(400).json({
+            success: false,
+            message,
+            field: fieldName,
+            errorType: "duplicate"
+        });
+    }
+
+    // General fallback error
+    res.status(500).json({
+        success: false,
+        message: error.message || "An error occurred during signup"
+    });
+
         
         res.status(500).json({
             success: false,

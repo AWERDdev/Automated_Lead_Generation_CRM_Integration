@@ -5,32 +5,32 @@ def create_table_Admin(conn):
             CREATE SCHEMA IF NOT EXISTS private_data;
 
             CREATE TABLE IF NOT EXISTS private_data.Admins (
-                Admin_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name TEXT NOT NULL,
                 username TEXT UNIQUE NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
-                Admin BOOLEAN NOT NULL
+                is_admin BOOLEAN NOT NULL DEFAULT TRUE
             );
             """
         )
         conn.commit()
 
-def insert_Admin(conn, name, email, phone, address, password , Admin):
+def insert_Admin(conn, name, email, phone, address, password , is_admin , username):
     with conn.cursor() as cur:
         cur.execute(
             """
             INSERT INTO Admins (name, email, phone, address )
-            VALUES (%s, %s, %s, %s , %s, %s)
+            VALUES (%s,%s,%s,%s,%s, %s,%s)
             RETURNING id;
             """,
-            (name, email, phone, address ,password , Admin)
+            (name, email, phone, address ,password , is_admin,username)
         )
-        user_id = cur.fetchone()[0]
+        admin_id = cur.fetchone()[0]
         conn.commit()
-        return user_id
+        return admin_id
 
 def search_Admin(conn, email=None, name=None):
     with conn.cursor() as cur:

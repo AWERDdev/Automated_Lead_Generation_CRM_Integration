@@ -12,26 +12,28 @@ def create_table_Users(conn):
                 email TEXT UNIQUE NOT NULL,
                 phone BIGINT UNIQUE NOT NULL,
                 address TEXT NOT NULL,
-                admin BOOLEAN DEFAULT FALSE
+                is_admin BOOLEAN NOT NULL DEFAULT FALSE
             );
             """
         )
         conn.commit()
 
 
-def insert_User(conn, name, email, phone, address, password , Admin):
+def insert_User(conn, name, email, phone, address, password, is_admin, username):
     with conn.cursor() as cur:
         cur.execute(
             """
-            INSERT INTO Admins (name, email, phone, address )
-            VALUES (%s, %s, %s, %s , %s, %s)
+            INSERT INTO private_data.Users 
+                (name, email, phone, address, password, is_admin, username)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id;
             """,
-            (name, email, phone, address ,password , Admin)
+            (name, email, phone, address, password, is_admin, username)
         )
         user_id = cur.fetchone()[0]
         conn.commit()
         return user_id
+
 
 def search_User(conn, email=None, name=None):
     with conn.cursor() as cur:
