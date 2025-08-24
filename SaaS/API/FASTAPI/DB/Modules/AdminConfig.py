@@ -18,7 +18,7 @@ def create_table_Admin(conn):
         )
         conn.commit()
 
-def insert_User(conn, name, email, phone, address, password , Admin):
+def insert_Admin(conn, name, email, phone, address, password , Admin):
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -32,7 +32,7 @@ def insert_User(conn, name, email, phone, address, password , Admin):
         conn.commit()
         return user_id
 
-def search_lead(conn, email=None, name=None):
+def search_Admin(conn, email=None, name=None):
     with conn.cursor() as cur:
         if email and name:
             cur.execute(

@@ -33,7 +33,7 @@ def insert_User(conn, name, email, phone, address, password , Admin):
         conn.commit()
         return user_id
 
-def search_lead(conn, email=None, name=None):
+def search_User(conn, email=None, name=None):
     with conn.cursor() as cur:
         if email and name:
             cur.execute(

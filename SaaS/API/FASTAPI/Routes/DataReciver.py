@@ -1,6 +1,9 @@
 from fastapi import APIRouter , Body
 from fastapi import HTTPException
 from Models.UserModel import UserModel, AdminModel
+from DB.Modules.DBSetup import connect_DB
+from DB.Modules.UserConfig import insert_User
+from DB.Modules.AdminConfig import insert_Admin
 
 router = APIRouter(
     prefix="/data_receiver",

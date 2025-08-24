@@ -6,8 +6,7 @@ import os
 load_dotenv()
 
 # # ✅ Debug: check what’s being read from .env
-# print("Password from .env:", repr("1231AWERD1"))
-# print("1231AWERD1")
+
 
 def database_exists(dbname):
     """Check if a database exists"""
@@ -15,7 +14,7 @@ def database_exists(dbname):
         host=os.getenv("host"),
         dbname=os.getenv("dbname"),  # connect to default DB (postgres)
         user=os.getenv("user"),
-        password="1231AWERD1" 
+        password=os.getenv("password") 
     )
     conn.autocommit = True
     
@@ -33,7 +32,7 @@ def create_database(dbname):
             host=os.getenv("host"),
             dbname=os.getenv("dbname"),  # still connect to default DB
             user=os.getenv("user"),
-            password="1231AWERD1"  # ⚠️ lowercase
+            password=os.getenv("password")  # ⚠️ lowercase
         )
         conn.autocommit = True
         
@@ -57,7 +56,7 @@ def connect_DB(dbname="LeadGenerator"):
         host=os.getenv("host"),
         dbname=dbname,  # use the dbname argument here
         user=os.getenv("user"),
-        password="1231AWERD1"  # ⚠️ lowercase
+        password=os.getenv("password")  # ⚠️ lowercase
     )
 
 def enable_pgcrypto(conn):
