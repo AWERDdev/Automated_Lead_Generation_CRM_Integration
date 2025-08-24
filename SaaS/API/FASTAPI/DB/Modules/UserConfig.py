@@ -34,31 +34,34 @@ def insert_User(conn, name, email, phone, address, password, is_admin, username)
         conn.commit()
         return user_id
 
-
 def search_User(conn, email=None, name=None):
     with conn.cursor() as cur:
         if email and name:
             cur.execute(
                 """
-                SELECT * FROM Users WHERE email = %s OR name = %s;
+                SELECT * FROM private_data.Users 
+                WHERE email = %s OR name = %s;
                 """,
-                (email, name)  # Fixed: removed the qualified parameter from SQL but it was still in parameter list
+                (email, name)
             )
         elif email:
             cur.execute(
                 """
-                SELECT * FROM Users WHERE email = %s;
+                SELECT * FROM private_data.Users 
+                WHERE email = %s;
                 """,
                 (email,)
             )
         elif name:
             cur.execute(
                 """
-                SELECT * FROM Users WHERE name = %s;
+                SELECT * FROM private_data.Users 
+                WHERE name = %s;
                 """,
                 (name,)
             )
         return cur.fetchall()
+
 
 # def update_UserData(conn, user_id=None, email=None, name=None):
 #     with conn.cursor() as cur:

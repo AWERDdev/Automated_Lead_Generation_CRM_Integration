@@ -37,21 +37,27 @@ def search_Admin(conn, email=None, name=None):
         if email and name:
             cur.execute(
                 """
-                SELECT * FROM Admins WHERE email = %s OR name = %s;
+                SELECT id, name, username, email, phone, address, is_admin
+                FROM private_data.Admins 
+                WHERE email = %s OR name = %s;
                 """,
-                (email, name)  # Fixed: removed the qualified parameter from SQL but it was still in parameter list
+                (email, name)
             )
         elif email:
             cur.execute(
                 """
-                SELECT * FROM Admins WHERE email = %s;
+                SELECT id, name, username, email, phone, address, is_admin
+                FROM private_data.Admins 
+                WHERE email = %s;
                 """,
                 (email,)
             )
         elif name:
             cur.execute(
                 """
-                SELECT * FROM Admins WHERE name = %s;
+                SELECT id, name, username, email, phone, address, is_admin
+                FROM private_data.Admins 
+                WHERE name = %s;
                 """,
                 (name,)
             )

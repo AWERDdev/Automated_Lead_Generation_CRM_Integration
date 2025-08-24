@@ -5,6 +5,8 @@ from Models.UserModel import UserModel, AdminModel
 from DB.Modules.DBSetup import connect_DB
 from DB.Modules.UserConfig import insert_User
 from DB.Modules.AdminConfig import insert_Admin
+from DB.Modules.UserConfig import search_User
+from DB.Modules.AdminConfig import search_Admin
 
 router = APIRouter(
     prefix="/data_receiver",
@@ -78,10 +80,45 @@ async def read_data(AdminData: AdminModel = Body(...)):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@router.get("/Verfiy_Data")
-def verify_Data(email: str, password: str):
+@router.get("/Verfiy_Data_user")
+async def verify_Data(email: str = None):
     if not email:
         raise HTTPException(status_code=400, detail="Email is required")
-    # Here you would typically check the email in your database
+    try:
+        print(F"verifying data for email: {email}")
+        print(" connecting to DB ")
+        conn = connect_DB()
+        print(" connection has been created ")
+        print(" Searching for User Data ")
+        user = search_User(conn, email=email)
+        conn.close()
+        print(" Connection has been closed ")
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user[0]  # Return the first matching user
+    except Exception as e:
+        if conn:
+            conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
 
-    return {"message": "Email verification endpoint reached", "email": email}
+@router.get("/Verfiy_Data_admin")
+async def verify_Data(email: str = None):
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    try:
+        print(F"verifying data for email: {email}")
+        print(" connecting to DB ")
+        conn = connect_DB()
+        print(" connection has been created ")
+        print(" Searching for admin Data ")
+        admin = search_Admin(conn, email=email)
+        conn.close()
+        print(" Connection has been closed ")
+        
+        if not admin:
+            raise HTTPException(status_code=404, detail="admin not found")
+        return admin[0]  # Return the first matching user
+    except Exception as e:
+        if conn:
+            conn.close()
+        raise HTTPException(status_code=500, detail=str(e))

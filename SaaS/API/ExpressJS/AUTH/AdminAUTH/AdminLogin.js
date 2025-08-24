@@ -14,7 +14,7 @@ router.post("/login", async (req, res) => {
 
   try {
     // ✅ Fetch admin data from FastAPI service
-    const response = await axios.get("http://127.0.0.1:8000/data_receiver/Verify_Data", {
+    const response = await axios.get("http://127.0.0.1:8000/data_receiver/Verfiy_Data_admin", {
       params: { email },
     });
 

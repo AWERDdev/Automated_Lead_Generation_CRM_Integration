@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
     try {
         // Find user by email
         // const user = await UserSchema.findOne({ email })
-        const response = await axios.get('http://127.0.0.1:8000/data_receiver/Verfiy_Data', { params: { email: email}})
+        const response = await axios.get('http://127.0.0.1:8000/data_receiver/Verfiy_Data_user', { params: { email: email}})
         const user = response.data
             if (!user) {
         return res.status(401).json({
