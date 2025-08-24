@@ -57,10 +57,10 @@ router.post("/login", async (req, res) => {
     try {
       let token;
       if (typeof rust.create_token_wasm === "function") {
-        token = await rust.create_token_wasm(admin.Admin_id.toString());
+        token = await rust.create_token_wasm(admin.admin.AdminID.toString());
         console.log("Token created (top-level)");
       } else if (typeof rust.default?.create_token_wasm === "function") {
-        token = await rust.default.create_token_wasm(admin.Admin_id.toString());
+        token = await rust.default.create_token_wasm(admin.admin.AdminID.toString());
         console.log("Token created (default)");
       } else {
         throw new Error("create_token_wasm not found in WASM module");
@@ -70,9 +70,7 @@ router.post("/login", async (req, res) => {
         success: true,
         token,
         admin: {
-          id: admin.Admin_id,
-          name: admin.name,
-          email: admin.email,
+          id: admin.admin.AdminID,
         },
       });
     } catch (error) {

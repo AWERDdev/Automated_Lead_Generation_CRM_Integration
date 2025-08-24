@@ -17,8 +17,8 @@ router.post('/login', async (req, res) => {
     try {
         // Find user by email
         // const user = await UserSchema.findOne({ email })
-        const user = await axios.get('http://127.0.0.1:8000/data_receiver/Verfiy_Data', { params: { email: email, password: password } })
-
+        const response = await axios.get('http://127.0.0.1:8000/data_receiver/Verfiy_Data', { params: { email: email}})
+        const user = response.data
             if (!user) {
         return res.status(401).json({
             success: false,
@@ -59,10 +59,10 @@ router.post('/login', async (req, res) => {
         try {
             let token;
             if (typeof rust.create_token_wasm === "function") {
-                token = await rust.create_token_wasm(user._id.toString());
+                token = await rust.create_token_wasm(user.UserID.toString());
                 console.log("Token created (top-level)");
             } else if (typeof rust.default?.create_token_wasm === "function") {
-                token = await rust.default.create_token_wasm(user._id.toString());
+                token = await rust.default.create_token_wasm(user.UserID.toString());
                 console.log("Token created (default)");
             } else {
                 throw new Error("create_token_wasm not found in WASM module");
@@ -71,8 +71,7 @@ router.post('/login', async (req, res) => {
                 success: true,
                 token,
                 user: {
-                    id: user._id,
-                    name: user.name,
+                    id: user.UserID,
                     email: user.email
                 }
             })

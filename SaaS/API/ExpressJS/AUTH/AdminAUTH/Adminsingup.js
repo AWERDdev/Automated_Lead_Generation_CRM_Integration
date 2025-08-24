@@ -66,7 +66,7 @@ router.post('/Signup', async (req, res) => {
         };
 
         const response = await axios.post('http://127.0.0.1:8000/data_receiver/Admin_Data', AdminData);
-        const newAdmin = response.Admin_ID;
+        const newAdmin = response.data;
         console.log("Admin data successfully sent to FastAPI. Received AdminID:", newAdmin);
         // Create JWT token
         let token;
@@ -92,8 +92,6 @@ router.post('/Signup', async (req, res) => {
             token,
             USER: {
                 id: newAdmin.AdminID,
-                name: newAdmin.name,
-                email: newAdmin.email
             }
         });
     } catch (error) {

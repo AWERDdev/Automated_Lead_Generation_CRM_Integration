@@ -72,7 +72,7 @@ router.post('/Signup', async (req, res) => {
         }
         const response = await axios.post('http://127.0.0.1:8000/data_receiver/User_Data', UserData)
         console.log(response.data)
-        const newUser = response.User_ID
+        const newUser = response.data
         console.log("User data successfully sent to FastAPI. Received UserID:", newUser);
         
         // Create JWT token using Rust
@@ -80,10 +80,10 @@ router.post('/Signup', async (req, res) => {
         let token;
         try {
             if (typeof rust.create_token_wasm === "function") {
-                token = await rust.create_token_wasm(newUser._id.toString());
+                token = await rust.create_token_wasm(newUser.UserID.toString());
                 console.log("Token created (top-level)");
             } else if (typeof rust.default?.create_token_wasm === "function") {
-                token = await rust.default.create_token_wasm(newUser._id.toString());
+                token = await rust.default.create_token_wasm(newUser.UserID.toString());
                 console.log("Token created (default)");
             } else {
                 throw new Error("create_token_wasm not found in WASM module");
@@ -102,8 +102,6 @@ router.post('/Signup', async (req, res) => {
             token,
             USER: {
                 id: newUser.UserID,
-                name: newUser.name,
-                email: newUser.email
             }
         });
     } catch (error) {
