@@ -13,6 +13,20 @@ router.get('/',(req,res)=>{
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
     console.log('Login attempt for:', email)
+        let allowed;
+        if (typeof rust.rate_limiter_wasm === "function") {
+            allowed = await rust.rate_limiter_wasm(key);
+            console.log("Rate limiter (top-level)");
+        } else if (typeof rust.default?.rate_limiter_wasm === "function") {
+            allowed = await rust.default.rate_limiter_wasm(key);
+            console.log("Rate limiter (default)");
+        } else {
+            throw new Error("rate_limiter_wasm not found in WASM module");
+        }
+        if (!allowed) {
+            return res.status(429).send('Too many attempts. Try again later.');
+        }
+        
 
     try {
         // Find user by email

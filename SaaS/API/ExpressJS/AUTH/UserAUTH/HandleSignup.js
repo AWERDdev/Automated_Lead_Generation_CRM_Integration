@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios')
+// In-memory failed attempts tracker (for production, use Redis or DB) - commented out
+const failedAttemptsMap = {};
 
 router.get('/',(req,res)=>{
     console.log('Signup Route called')
@@ -15,7 +17,24 @@ router.post('/Signup', async (req, res) => {
         console.log('rust.validate_password_wasm:', typeof rust.validate_password_wasm);
         console.log('rust.default.validate_password_wasm:', typeof rust.default?.validate_password_wasm);
         console.log('Received signup request for:', email)
+            
+    const key = email; // Could also use req.ip or email+ip - commented out
 
+    // 1. Rate limiting - commented out due to WASM errors
+
+    let allowed;
+    if (typeof rust.rate_limiter_wasm === "function") {
+        allowed = await rust.rate_limiter_wasm(key);
+        console.log("Rate limiter (top-level)");
+    } else if (typeof rust.default?.rate_limiter_wasm === "function") {
+        allowed = await rust.default.rate_limiter_wasm(key);
+        console.log("Rate limiter (default)");
+    } else {
+        throw new Error("rate_limiter_wasm not found in WASM module");
+    }
+    if (!allowed) {
+        return res.status(429).send('Too many attempts. Try again later.');
+    }
         // Validate password using Rust
         console.log("validating password")
         try {
