@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
+use tokio::time::{Duration, Instant ,sleep};
 
 pub struct RateLimiter {
     attempts: HashMap<String, (u32, Instant)>,
@@ -31,7 +31,7 @@ impl RateLimiter {
     }
 }
 
-use tokio::time::{sleep, Duration};
+
 
 pub async fn delay_on_failure(failed_attempts: u32) {
     let base_delay = 1; // in seconds
@@ -43,15 +43,3 @@ pub async fn delay_on_failure(failed_attempts: u32) {
     }
 }
 
-use rand::Rng;
-use std::io::{self, Write};
-
-pub fn text_captcha() -> bool {
-    let a = rand::thread_rng().gen_range(1..10);
-    let b = rand::thread_rng().gen_range(1..10);
-    print!("What is {} + {}? ", a, b);
-    io::stdout().flush().unwrap();
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    input.trim() == (a + b).to_string()
-}

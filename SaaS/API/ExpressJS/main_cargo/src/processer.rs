@@ -3,7 +3,7 @@ pub mod modules;
 // Re-export commonly used functions
 pub use modules::auth::{create_token, verify_token};
 pub use modules::password::{hash_password, verify_password, validate_password, PasswordError};
-pub use modules::security::{RateLimiter, delay_on_failure, text_captcha};
+pub use modules::security::{RateLimiter, delay_on_failure};
 
 // WASM bindings
 #[cfg(target_arch = "wasm32")]
@@ -44,11 +44,7 @@ pub fn verify_password_wasm(password: &str, hash: &str) -> Result<bool, JsValue>
         .map_err(|e| JsValue::from_str(&format!("{:?}", e)))
 }
 
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn text_captcha_wasm() -> Result<bool, JsValue> {
-    Ok(text_captcha())
-}
+
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
