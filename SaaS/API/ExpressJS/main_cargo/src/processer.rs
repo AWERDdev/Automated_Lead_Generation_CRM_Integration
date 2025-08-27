@@ -54,7 +54,12 @@ pub fn rate_limiter_wasm(user: &str) -> Result<bool, JsValue> {
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-pub async fn delay_on_failure_wasm(failed_attempts: u32) -> Result<(), JsValue> {
-    delay_on_failure(failed_attempts).await; // 5s base delay, example
-    Ok(())
+pub fn delay_on_failure_wasm(failed_attempts: u32) -> js_sys::Promise {
+    use wasm_bindgen_futures::future_to_promise;
+    use wasm_bindgen::JsValue;
+
+    future_to_promise(async move {
+        delay_on_failure(failed_attempts).await;
+        Ok(JsValue::UNDEFINED) // JS Promise resolves to `undefined`
+    })
 }
