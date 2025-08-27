@@ -3,7 +3,7 @@ const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios')
 // In-memory failed attempts tracker (for production, use Redis or DB) - commented out
-// const failedAttemptsMap = {};
+const failedAttempts = {};
 
 router.get('/',(req,res)=>{
     console.log('Login Route called')
@@ -13,20 +13,39 @@ router.get('/',(req,res)=>{
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
     console.log('Login attempt for:', email)
-        let allowed;
-        if (typeof rust.rate_limiter_wasm === "function") {
-            allowed = await rust.rate_limiter_wasm(key);
-            console.log("Rate limiter (top-level)");
-        } else if (typeof rust.default?.rate_limiter_wasm === "function") {
-            allowed = await rust.default.rate_limiter_wasm(key);
-            console.log("Rate limiter (default)");
-        } else {
-            throw new Error("rate_limiter_wasm not found in WASM module");
-        }
-        if (!allowed) {
-            return res.status(429).send('Too many attempts. Try again later.');
-        }
-        
+    const key = email || req.ip;
+
+    // 1. NodeJS layer (basic lockout)
+    // if (!failedAttempts[key]) {
+    //     failedAttempts[key] = { count: 0, firstAttempt: Date.now() };
+    // }
+    // failedAttempts[key].count++;
+
+    // if (failedAttempts[key].count > 5) { // 5 attempts allowed
+    //     const timeSinceFirst = Date.now() - failedAttempts[key].firstAttempt;
+    //     if (timeSinceFirst < 15 * 60 * 1000) { // still in 15 min window
+    //         return res.status(429).send('Too many attempts. Try again later.');
+    //     } else {
+    //         // reset window
+    //         failedAttempts[key] = { count: 1, firstAttempt: Date.now() };
+    //     }
+    // }
+
+    // 2. Rust WASM RateLimiter (extra layer)
+    let allowed;
+    if (typeof rust.rate_limiter_wasm === "function") {
+        allowed = await rust.rate_limiter_wasm(key);
+        console.log("Rate limiter (top-level)");
+    } else if (typeof rust.default?.rate_limiter_wasm === "function") {
+        allowed = await rust.default.rate_limiter_wasm(key);
+        console.log("Rate limiter (default)");
+    } else {
+        throw new Error("rate_limiter_wasm not found in WASM module");
+    }
+
+    if (!allowed) {
+        return res.status(429).send('Too many attempts. Try again later.');
+    }
 
     try {
         // Find user by email
@@ -53,6 +72,20 @@ router.post('/login', async (req, res) => {
                 throw new Error("verify_password_wasm not found in WASM module");
             }
             if (!isValidPassword) {
+                // Increment failed attempts
+            if (!failedAttempts[key]) {
+                failedAttempts[key] = 0;
+            }
+            failedAttempts[key]++;
+
+            // Call Rust delay calculator (returns seconds)
+            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+
+            console.log(`Delaying for ${delaySecs} seconds...`);
+
+            // Wait in Node.js
+            await new Promise(res => setTimeout(res, delaySecs * 1000));
+            
                 return res.status(401).json({
                     success: false,
                     message: "Invalid email or password"
@@ -67,7 +100,7 @@ router.post('/login', async (req, res) => {
         }
 
         // On successful login, reset failed attempts - commented out
-        // failedAttemptsMap[key] = 0;
+        // failedAttempts[key] = 0;
 
         // Create JWT token using Rust
         try {
@@ -104,7 +137,19 @@ router.post('/login', async (req, res) => {
     // If FastAPI sent back a duplicate violation error
     if (error.response && error.response.status === 400 && error.response.data.detail) {
         const message = error.response.data.detail;
+          if (!failedAttempts[key]) {
+                failedAttempts[key] = 0;
+            }
+            failedAttempts[key]++;
 
+            // Call Rust delay calculator (returns seconds)
+            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+            
+            console.log(`Delaying for ${delaySecs} seconds...`);
+
+            // Wait in Node.js
+            await new Promise(res => setTimeout(res, delaySecs * 1000));
+            
         // You can customize like MongoDB did
         let fieldName = "unknown";
         if (message.includes("email")) fieldName = "email";
@@ -116,14 +161,7 @@ router.post('/login', async (req, res) => {
             errorType: "duplicate"
         });
     }
-
-    // General fallback error
-    res.status(500).json({
-        success: false,
-        message: error.message || "An error occurred during signup"
-    });
-
-        
+   
         res.status(500).json({
             success: false,
             message: error.message || "An error occurred during login"

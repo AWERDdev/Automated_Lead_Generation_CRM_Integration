@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const rust = require("../../main_cargo/pkg/rust_processer_lib.js");
 const axios = require("axios");
+const failedAttempts = {};
 
 router.get("/", (req, res) => {
   console.log("Admin Login Route called");
@@ -11,8 +12,27 @@ router.get("/", (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log("Login attempt for:", email);
+    const key = email || req.ip;
+        
+    // 1. Rate limiting - commented out due to WASM errors
+    
+        let allowed;
+        if (typeof rust.rate_limiter_wasm === "function") {
+            allowed = await rust.rate_limiter_wasm(key);
+            console.log("Rate limiter (top-level)");
+        } else if (typeof rust.default?.rate_limiter_wasm === "function") {
+            allowed = await rust.default.rate_limiter_wasm(key);
+            console.log("Rate limiter (default)");
+        } else {
+            throw new Error("rate_limiter_wasm not found in WASM module");
+        }
+        if (!allowed) {
+            return res.status(429).send('Too many attempts. Try again later.');
+        }
 
   try {
+
+
     // ✅ Fetch admin data from FastAPI service
     const response = await axios.get("http://127.0.0.1:8000/data_receiver/Verfiy_Data_admin", {
       params: { email },
@@ -40,6 +60,20 @@ router.post("/login", async (req, res) => {
       }
 
       if (!isValidPassword) {
+              // Increment failed attempts
+            if (!failedAttempts[key]) {
+                failedAttempts[key] = 0;
+            }
+            failedAttempts[key]++;
+
+            // Call Rust delay calculator (returns seconds)
+            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+
+            console.log(`Delaying for ${delaySecs} seconds...`);
+
+            // Wait in Node.js
+            await new Promise(res => setTimeout(res, delaySecs * 1000));
+
         return res.status(401).json({
           success: false,
           message: "Invalid email or password",
@@ -99,13 +133,19 @@ router.post("/login", async (req, res) => {
             errorType: "duplicate"
         });
     }
+      // Increment failed attempts
+            if (!failedAttempts[key]) {
+                failedAttempts[key] = 0;
+            }
+            failedAttempts[key]++;
 
-    // General fallback error
-    res.status(500).json({
-        success: false,
-        message: error.message || "An error occurred during signup"
-    });
+            // Call Rust delay calculator (returns seconds)
+            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
 
+            console.log(`Delaying for ${delaySecs} seconds...`);
+
+            // Wait in Node.js
+            await new Promise(res => setTimeout(res, delaySecs * 1000));
 
     res.status(500).json({
       success: false,

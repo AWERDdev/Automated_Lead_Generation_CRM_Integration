@@ -3,7 +3,7 @@ const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios')
 // In-memory failed attempts tracker (for production, use Redis or DB) - commented out
-const failedAttemptsMap = {};
+const failedAttempts = {};
 
 router.get('/',(req,res)=>{
     console.log('Signup Route called')
@@ -18,7 +18,7 @@ router.post('/Signup', async (req, res) => {
         console.log('rust.default.validate_password_wasm:', typeof rust.default?.validate_password_wasm);
         console.log('Received signup request for:', email)
             
-    const key = email; // Could also use req.ip or email+ip - commented out
+    const key = email || req.ip;
 
     // 1. Rate limiting - commented out due to WASM errors
 
@@ -135,7 +135,19 @@ router.post('/Signup', async (req, res) => {
         if (message.includes("email")) fieldName = "email";
         else if (message.includes("username")) fieldName = "username";
         else if (message.includes("phone")) fieldName = "phone";
+      // Increment failed attempts
+            if (!failedAttempts[key]) {
+                failedAttempts[key] = 0;
+            }
+            failedAttempts[key]++;
 
+            // Call Rust delay calculator (returns seconds)
+            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+
+            console.log(`Delaying for ${delaySecs} seconds...`);
+
+            // Wait in Node.js
+            await new Promise(res => setTimeout(res, delaySecs * 1000));
         return res.status(400).json({
             success: false,
             message,
@@ -143,13 +155,6 @@ router.post('/Signup', async (req, res) => {
             errorType: "duplicate"
         });
     }
-
-    // General fallback error
-    res.status(500).json({
-        success: false,
-        message: error.message || "An error occurred during signup"
-    });
-
 
         
         res.status(500).json({

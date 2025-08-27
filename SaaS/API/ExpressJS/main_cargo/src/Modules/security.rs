@@ -31,13 +31,15 @@ impl RateLimiter {
     }
 }
 
-use std::thread::sleep;
+use tokio::time::{sleep, Duration};
 
-pub fn delay_on_failure(failed_attempts: u32) {
+pub async fn delay_on_failure(failed_attempts: u32) {
+    let base_delay = 1; // in seconds
     if failed_attempts > 0 {
-        let delay = 2u64.pow(failed_attempts.min(5)); // Exponential backoff, max 32s
+        // Exponential backoff: 2^failed_attempts, capped to prevent overflow
+        let delay = 2u64.pow(failed_attempts.min(1)) + base_delay;
         println!("Delaying for {} seconds...", delay);
-        sleep(Duration::from_secs(delay));
+        sleep(Duration::from_secs(delay)).await;
     }
 }
 
