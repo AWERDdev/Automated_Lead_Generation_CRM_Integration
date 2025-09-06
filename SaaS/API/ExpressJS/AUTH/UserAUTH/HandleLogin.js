@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios')
+const Userschema = require('../../Models/FullModels/UserModel');
+const UserschemaSideModel = require('../../Models/SideModels/UserModel');
 // In-memory failed attempts tracker (for production, use Redis or DB) - commented out
 const failedAttempts = {};
 
@@ -33,7 +35,7 @@ router.post('/login_postgres', async (req, res) => {
 
     try {
         // Find user by email
-        // const user = await UserSchema.findOne({ email })
+        // const user = await Userschema.findOne({ email })
         const response = await axios.get('http://127.0.0.1:8000/data_receiver/Verfiy_Data_user', { params: { email: email}})
         const user = response.data
             if (!user) {
@@ -176,7 +178,7 @@ router.post('/login_mongodb', async (req, res) => {
     }
     try {
         // Find user by email
-        const user = await UserSchema.findOne({ email })
+        const user = await Userschema.findOne({ email })
             if (!user) {
         return res.status(401).json({
             success: false,
@@ -244,10 +246,8 @@ router.post('/login_mongodb', async (req, res) => {
 
     } catch (error) {
         console.error('Login error:', error)
-      // If FastAPI sent back a duplicate violation error
-    if (error.response && error.response.status === 400 && error.response.data.detail) {
-        const message = error.response.data.detail;
-          if (!failedAttempts[key]) {
+             // Handle MongoDB duplicate key errors
+                 if (!failedAttempts[key]) {
                 failedAttempts[key] = 0;
             }
             failedAttempts[key]++;
@@ -260,17 +260,32 @@ router.post('/login_mongodb', async (req, res) => {
             // Wait in Node.js
             await new Promise(res => setTimeout(res, delaySecs * 1000));
             
-        // You can customize like MongoDB did
-        let fieldName = "unknown";
-        if (message.includes("email")) fieldName = "email";
-        else if (message.includes("password")) fieldName = "password";
-        return res.status(400).json({
-            success: false,
-            message,
-            field: fieldName,
-            errorType: "duplicate"
-        });
-    }
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            let message = "Duplicate key error";
+            let fieldName = field;
+            
+            switch (field) {
+                case 'email':
+                    message = "Email is already in use";
+                    fieldName = "email";
+                    break;
+                case 'UserID':
+                    message = "User ID already exists";
+                    fieldName = "userId";
+                    break;
+                default:
+                    message = `${field} is already taken`;
+                    fieldName = field;
+            }
+            
+            return res.status(400).json({
+                success: false,
+                message: message,
+                field: fieldName,
+                errorType: "duplicate"
+            });
+        }
         
         res.status(500).json({
             success: false,
@@ -278,8 +293,5 @@ router.post('/login_mongodb', async (req, res) => {
         })
     }
 })
-
-
-module.exports = router
 
 module.exports = router

@@ -3,7 +3,8 @@ const router = express.Router()
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios');
 const failedAttempts = {};
-
+const AdminSchema = require('../../Models/FullModels/AdminModel');
+const AdminschemaSideModel = require('../../Models/SideModels/AdminModel'); 
 router.get('/', (req, res) => {
     console.log('Signup Route called')
     res.json({ message: "this is admin signup route" })
@@ -203,7 +204,7 @@ router.post('/Signup_mongodb', async (req, res) => {
         
         // Check for existing admin with same email
         console.log("checking if admin email exists")
-        const existingAdminEmail = await Adminschema.findOne({ email });
+        const existingAdminEmail = await AdminSchema.findOne({ email });
         if (existingAdminEmail) {
             return res.status(400).json({
                 success: false,
@@ -239,7 +240,7 @@ router.post('/Signup_mongodb', async (req, res) => {
         console.log('saving admin data')
         let newAdmin;
         try {
-            newAdmin = await Adminschema.create({
+            newAdmin = await AdminSchema.create({
                 name,
                 email,
                 password: hashedPassword,
@@ -317,37 +318,46 @@ router.post('/Signup_mongodb', async (req, res) => {
         });
     } catch (error) {
         console.error('Signup error:', error);
-   
-    // If FastAPI sent back a duplicate violation error
-    if (error.response && error.response.status === 400 && error.response.data.detail) {
-        const message = error.response.data.detail;
-
-        // You can customize like MongoDB did
-        let fieldName = "unknown";
-        if (message.includes("email")) fieldName = "email";
-        else if (message.includes("username")) fieldName = "username";
-        else if (message.includes("phone")) fieldName = "phone";
-              // Increment failed attempts
                     if (!failedAttempts[key]) {
-                        failedAttempts[key] = 0;
-                    }
-                    failedAttempts[key]++;
-        
-                    // Call Rust delay calculator (returns seconds)
-                    const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
-        
-                    console.log(`Delaying for ${delaySecs} seconds...`);
-        
-                    // Wait in Node.js
-                    await new Promise(res => setTimeout(res, delaySecs * 1000));
-
-        return res.status(400).json({
-            success: false,
-            message,
-            field: fieldName,
-            errorType: "duplicate"
-        });
-    }
+                                failedAttempts[key] = 0;
+                            }
+                            failedAttempts[key]++;
+                
+                            // Call Rust delay calculator (returns seconds)
+                            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+                            
+                            console.log(`Delaying for ${delaySecs} seconds...`);
+                
+                            // Wait in Node.js
+                            await new Promise(res => setTimeout(res, delaySecs * 1000));    
+                   // Handle MongoDB duplicate key errors
+        // Handle MongoDB duplicate key errors
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            let message = "Duplicate key error";
+            let fieldName = field;
+            
+            switch (field) {
+                case 'email':
+                    message = "Email is already in use";
+                    fieldName = "email";
+                    break;
+                case 'UserID':
+                    message = "User ID already exists";
+                    fieldName = "userId";
+                    break;
+                default:
+                    message = `${field} is already taken`;
+                    fieldName = field;
+            }
+            
+            return res.status(400).json({
+                success: false,
+                message: message,
+                field: fieldName,
+                errorType: "duplicate"
+            });
+        }
         
         res.status(500).json({
             success: false,
