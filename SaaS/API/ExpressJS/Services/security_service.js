@@ -1,4 +1,4 @@
-const SecurityTracking = require('../Models/SecurityTrackingModel');
+const SecurityTracking = require('../Models/SideModels/SecurityTrackingModel');
 const crypto = require('crypto');
 
 class EnhancedSecurityService {

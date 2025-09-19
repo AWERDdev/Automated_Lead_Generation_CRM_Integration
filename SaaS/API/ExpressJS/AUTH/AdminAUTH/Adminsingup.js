@@ -5,6 +5,7 @@ const axios = require('axios');
 const failedAttempts = {};
 const AdminSchema = require('../../Models/FullModels/AdminModel');
 const AdminschemaSideModel = require('../../Models/SideModels/AdminModel'); 
+
 router.get('/', (req, res) => {
     console.log('Signup Route called')
     res.json({ message: "this is admin signup route" })

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../Models/UserModel');
+const User = require('../../Models/FullModels/UserModel');
+const UserschemaSideModel = require('../../Models/SideModels/UserModel');
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 
 // Update user data
