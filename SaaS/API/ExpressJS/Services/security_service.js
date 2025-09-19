@@ -1,4 +1,4 @@
-const SecurityTracking = require('../Models/SideModels/SecurityTrackingModel');
+const SecurityTracking = require('../Models/SecurityTrackingModel');
 const crypto = require('crypto');
 
 class EnhancedSecurityService {
@@ -415,7 +415,7 @@ class EnhancedSecurityService {
   async checkUserExists(email) {
     try {
       // Check MongoDB side database first (faster)
-      const sideUser = await require('../Models/SideModels/UserModel').findOne({ 
+      const sideUser = await require('../Models/UserModel').findOne({ 
         email: email.toLowerCase() 
       });
       
