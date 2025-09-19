@@ -91,6 +91,7 @@ router.post('/Signup_postgres', async (req, res) => {
             is_admin:false,
             username:username
         }
+        
         const response = await axios.post('http://127.0.0.1:8000/data_receiver/User_Data', UserData)
         console.log(response.data)
         const newUser = response.data
@@ -116,8 +117,10 @@ router.post('/Signup_postgres', async (req, res) => {
                 message: "Error creating authentication token: " + error
             });
         }
+        
         console.log(' token created')
         console.log('sending results')
+
         res.status(201).json({
             success: true,
             token,

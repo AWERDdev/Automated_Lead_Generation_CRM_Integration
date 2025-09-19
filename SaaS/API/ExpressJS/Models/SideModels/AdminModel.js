@@ -1,11 +1,6 @@
 const mongoose = require('mongoose');
 
 const AdminschemaSideModel = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
   email: {
     type: String,
     required: true,
@@ -13,24 +8,22 @@ const AdminschemaSideModel = new mongoose.Schema({
     trim: true,
     lowercase: true
   },
-  password: {
-    type: String,
-    required: true
-  },
-  phone: {
+  username: {
     type: String,
     required: true,
     trim: true
   },
-  address: {
+  token: {
     type: String,
     required: true,
-    trim: true
+    unique: true,
+    trim: true,
+    default: null
   },
-  AdminCode: {
+  role: {
     type: String,
-    required: true,
-    trim: true
+    default: 'User',
+    enum: ['User']
   },
   isActive: {
     type: Boolean,

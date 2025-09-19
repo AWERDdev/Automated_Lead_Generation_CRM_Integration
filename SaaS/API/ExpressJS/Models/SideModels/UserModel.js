@@ -1,39 +1,40 @@
 const mongoose = require('mongoose');
+const { token } = require('morgan');
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const UserschemaSideModel = new Schema({
-  name: {
+  username: {
     type: String,
     required: true,
     trim: true
   },
-  email: {
+  token: {
     type: String,
     required: true,
     unique: true,
-    trim: true
+    trim: true,
+    default: null
   },
-  password:{
-    type:String,
-    trim:true,
-    required:true
-  },
-  phone: {
+    email: {
     type: String,
-    trim: true
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true
   },
+    lastLogin: {
+    type: Date,
+    default: null
+  },
+    isActive: {
+    type: Boolean,
+    default: true
+  },
+
   role: {
     type: String,
     default: 'User',
     enum: ['User']
-  },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String
   },
   createdAt: {
     type: Date,
@@ -43,11 +44,6 @@ const UserschemaSideModel = new Schema({
     type: Date,
     default: Date.now
   },
-  UserID: {
-    type: ObjectId,
-    default: () => new mongoose.Types.ObjectId(),
-    unique: true
-  }
 });
 
 // Update the updatedAt field before saving
@@ -55,6 +51,8 @@ UserschemaSideModel.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
+UserschemaSideModel.index({ isActive: 1 });
+UserschemaSideModel.index({ role: 1 });
 
 module.exports = mongoose.models.User ||  mongoose.model('User', UserschemaSideModel);
 
