@@ -265,37 +265,3 @@ router.get('/security-status/:email', async (req, res) => {
     }
 });
 
-router.get('/admin/security-dashboard', async (req, res) => {
-    try {
-        // Add proper admin authentication here
-        
-        const analytics = await SecurityService.getAnalytics();
-        
-        // Get top attacked emails (non-existent users)
-        const topAttackedEmails = await SecurityTracking.aggregate([
-            { $match: { 
-                identifierType: 'email',
-                'suspiciousActivity.unknownUserAttempts': { $gte: 1 }
-            }},
-            { $project: {
-                email: '$identifier',
-                attempts: '$suspiciousActivity.unknownUserAttempts',
-                totalFailed: '$failedAttempts',
-                lastAttempt: '$lastFailedAttempt',
-                isBlocked: 1
-            }},
-            { $sort: { attempts: -1 } },
-            { $limit: 20 }
-        ]);
-        
-        res.json({
-            ...analytics,
-            unknownUserAttacks: topAttackedEmails
-        });
-    } catch (error) {
-        console.error('Error fetching security dashboard:', error);
-        res.status(500).json({ error: 'Failed to fetch dashboard data' });
-    }
-});
-
-module.exports = router;
