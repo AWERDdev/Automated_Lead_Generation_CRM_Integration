@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { userProps } from "@/Types/User";
-import type { companyProps } from "@/Types/Company";
 // Signup input handling hook with individual useState for each field
 export const useSignupInputHandling = ():userProps => {
   const [name, setName] = useState("");
@@ -80,93 +79,93 @@ export const useLoginInputHandling = () => {
   };
 };
 
-// Company Signup input handling hook with individual useState for each field
-export const useCompanySignupInputHandling = ():companyProps => {
-  const [companyName, setCompanyName] = useState("");
-  const [companyType, setCompanyType] = useState("");
-  const [medicalLicense, setMedicalLicense] = useState("");
-  const [adminName, setAdminName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [businessAddress, setBusinessAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({});
+// // Company Signup input handling hook with individual useState for each field
+// export const useCompanySignupInputHandling = ():companyProps => {
+//   const [companyName, setCompanyName] = useState("");
+//   const [companyType, setCompanyType] = useState("");
+//   const [medicalLicense, setMedicalLicense] = useState("");
+//   const [adminName, setAdminName] = useState("");
+//   const [phone, setPhone] = useState("");
+//   const [companyEmail, setCompanyEmail] = useState("");
+//   const [businessAddress, setBusinessAddress] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [confirmPassword, setConfirmPassword] = useState("");
+//   const [errors, setErrors] = useState({});
 
-  const reset = () => {
-    setCompanyName("");
-    setCompanyType("");
-    setMedicalLicense("");
-    setAdminName("");
-    setPhone("");
-    setCompanyEmail("");
-    setBusinessAddress("");
-    setPassword("");
-    setConfirmPassword("");
-    setErrors({});
-  };
+//   const reset = () => {
+//     setCompanyName("");
+//     setCompanyType("");
+//     setMedicalLicense("");
+//     setAdminName("");
+//     setPhone("");
+//     setCompanyEmail("");
+//     setBusinessAddress("");
+//     setPassword("");
+//     setConfirmPassword("");
+//     setErrors({});
+//   };
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!companyName) newErrors.companyName = "Company Name is required";
-    if (!companyType) newErrors.companyType = "Company Type is required";
-    if (!medicalLicense) newErrors.medicalLicense = "Medical License Number is required";
-    if (!adminName) newErrors.adminName = "Administrator Name is required";
-    if (!phone) newErrors.phone = "Phone Number is required";
-    if (!companyEmail) newErrors.companyEmail = "Company Email is required";
-    if (!businessAddress) newErrors.businessAddress = "Business Address is required";
-    if (!password) newErrors.password = "Password is required";
-    if (password && password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    if (!confirmPassword) newErrors.confirmPassword = "Please confirm your password";
-    if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+//   const validate = () => {
+//     const newErrors: Record<string, string> = {};
+//     if (!companyName) newErrors.companyName = "Company Name is required";
+//     if (!companyType) newErrors.companyType = "Company Type is required";
+//     if (!medicalLicense) newErrors.medicalLicense = "Medical License Number is required";
+//     if (!adminName) newErrors.adminName = "Administrator Name is required";
+//     if (!phone) newErrors.phone = "Phone Number is required";
+//     if (!companyEmail) newErrors.companyEmail = "Company Email is required";
+//     if (!businessAddress) newErrors.businessAddress = "Business Address is required";
+//     if (!password) newErrors.password = "Password is required";
+//     if (password && password.length < 6) newErrors.password = "Password must be at least 6 characters";
+//     if (!confirmPassword) newErrors.confirmPassword = "Please confirm your password";
+//     if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
 
-  return {
-    companyName, setCompanyName,
-    companyType, setCompanyType,
-    medicalLicense, setMedicalLicense,
-    adminName, setAdminName,
-    phone, setPhone,
-    companyEmail, setCompanyEmail,
-    businessAddress, setBusinessAddress,
-    password, setPassword,
-    confirmPassword, setConfirmPassword,
-    errors, setErrors,
-    reset,
-    validate,
-  };
-};
+//   return {
+//     companyName, setCompanyName,
+//     companyType, setCompanyType,
+//     medicalLicense, setMedicalLicense,
+//     adminName, setAdminName,
+//     phone, setPhone,
+//     companyEmail, setCompanyEmail,
+//     businessAddress, setBusinessAddress,
+//     password, setPassword,
+//     confirmPassword, setConfirmPassword,
+//     errors, setErrors,
+//     reset,
+//     validate,
+//   };
+// };
 
-// Company Login input handling hook
-export const useCompanyLoginInputHandling = () => {
-  const [companyEmail, setCompanyEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+// // Company Login input handling hook
+// export const useCompanyLoginInputHandling = () => {
+//   const [companyEmail, setCompanyEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [errors, setErrors] = useState({});
 
-  const reset = () => {
-    setCompanyEmail("");
-    setPassword("");
-    setErrors({});
-  };
+//   const reset = () => {
+//     setCompanyEmail("");
+//     setPassword("");
+//     setErrors({});
+//   };
 
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!companyEmail) newErrors.companyEmail = "Company Email is required";
-    if (!password) newErrors.password = "Password is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+//   const validate = () => {
+//     const newErrors: Record<string, string> = {};
+//     if (!companyEmail) newErrors.companyEmail = "Company Email is required";
+//     if (!password) newErrors.password = "Password is required";
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
 
-  return {
-    companyEmail, setCompanyEmail,
-    password, setPassword,
-    errors, setErrors,
-    reset,
-    validate,
-  };
-};
+//   return {
+//     companyEmail, setCompanyEmail,
+//     password, setPassword,
+//     errors, setErrors,
+//     reset,
+//     validate,
+//   };
+// };
 
 
 

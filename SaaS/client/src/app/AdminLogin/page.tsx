@@ -51,7 +51,7 @@ const AdminLogin: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/apiAUTH/admin/login`, {
+      const response = await fetch(`${API_BASE_URL}/apiAUTH/admin/login_postgres_Admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

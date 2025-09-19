@@ -19,7 +19,7 @@ const UserLogin: React.FC = () => {
 
   const SendData = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/apiAUTH/user/login`, {
+      const response = await fetch(`${API_BASE_URL}/apiAUTH/user/login_postgres`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

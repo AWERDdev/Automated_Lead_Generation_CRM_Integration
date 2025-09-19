@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
   res.json({ message: "This is the admin login route" });
 });
 
-router.post("/login_postgres", async (req, res) => {
+router.post("/login_postgres_Admin", async (req, res) => {
   const { email, password } = req.body;
   console.log("Login attempt for:", email);
     const key = email || req.ip;
@@ -156,7 +156,7 @@ router.post("/login_postgres", async (req, res) => {
 });
 
 
-router.post('/login_mongodb', async (req, res) => {
+router.post('/login_mongodb_Admin', async (req, res) => {
     const { email, password } = req.body
     console.log('Login attempt for:', email)
     const key = email || req.ip;

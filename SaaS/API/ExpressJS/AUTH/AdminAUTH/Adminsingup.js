@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
     res.json({ message: "this is admin signup route" })
 });
 
-router.post('/Signup_posgres', async (req, res) => {
+router.post('/Signup_posgres_Admin', async (req, res) => {
     try {
         const { name, password, email, phone, address, username, AdminCode } = req.body;
         console.log('Received admin signup request for:', email);
@@ -158,7 +158,7 @@ router.post('/Signup_posgres', async (req, res) => {
 
 
 
-router.post('/Signup_mongodb', async (req, res) => {
+router.post('/Signup_mongodb_Admin', async (req, res) => {
     try {
         const { name, password, email, phone, address,AdminCode } = req.body;
         console.log('rust', rust)

@@ -24,7 +24,7 @@ const UserSignup: React.FC = () => {
 
   const SendData = async () => {
     setApiError("");
-    const response = await fetch(`${API_BASE_URL}/apiAUTH/USER/Signup`, {
+    const response = await fetch(`${API_BASE_URL}/apiAUTH/user/Signup_postgres`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

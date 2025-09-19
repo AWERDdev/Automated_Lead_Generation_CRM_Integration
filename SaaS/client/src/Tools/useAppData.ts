@@ -13,7 +13,6 @@ export const useAppData = () => {
     const [isAUTH, setIsAUTH] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<UserData | null>(null);
-    const [userType, setUserType] = useState<'USER' | 'COMP' | null>(null);
 
     const handleLogout = async (): Promise<void> => {
         // Clear all tokens and user data
@@ -29,7 +28,6 @@ export const useAppData = () => {
         
         setIsAUTH(false);
         setUser(null);
-        setUserType(null);
         window.location.href = '/';
     };
 
@@ -51,7 +49,6 @@ export const useAppData = () => {
         // If token exists, consider user authenticated
         if (token) {
             setIsAUTH(true);
-            setUserType(type as 'USER' | 'COMP');
             
             // Set user data from localStorage
             if (type === 'USER') {
@@ -87,7 +84,6 @@ export const useAppData = () => {
             
             setIsAUTH(false);
             setUser(null);
-            setUserType(null);
         }
         
         setIsLoading(false);
@@ -101,7 +97,6 @@ export const useAppData = () => {
         isAUTH,
         isLoading,
         user,
-        userType,
         handleLogout,
         checkUserAuth,
         setIsLoading,
