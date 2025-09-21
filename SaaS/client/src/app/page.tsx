@@ -48,11 +48,11 @@ const Home: React.FC = () => {
           </div>
         </div>
         {/* Call to Action Section */}
-        <div className="w-full max-w-2xl mx-auto text-center justify-center items-center mt-12 mb-8">
+        <div className="w-full max-w-2xl mx-auto text-center  items-center mt-12 mb-8">
           <h2 className="text-3xl font-bold mb-2">Ready to Transform Your Medical Supply Chain?</h2>
           <p className="text-gray-600 mb-6">Join thousands of healthcare providers who trust MediSupply for their medicine needs</p>
-          <ButtonStyle2 className="grid justify-self-center" ButtonText='Start Free Trial' onClick={goToLogin} />
         </div>
+                <ButtonStyle2 className="grid justify-self-center  items-center" ButtonText='Start Free Trial' onClick={goToLogin} />
       </section>
       <BottomNav />
     </main>
