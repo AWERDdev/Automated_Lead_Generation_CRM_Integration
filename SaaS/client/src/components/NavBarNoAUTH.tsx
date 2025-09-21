@@ -11,7 +11,7 @@ const NavBarNoAUTH: React.FC = () =>{
                 <Link href={ROUTES.HOME}>
                 <span className="bg-blue-100 flex rounded-lg p-1">
                     <Box className="text-blue-600" size={28} />
-                        <h1 className="text-2xl flex font-bold text-blue-700">MediSupply</h1>
+                        <h1 className="text-2xl flex font-bold text-blue-700">Stock Page</h1>
                 </span>
                 
                 </Link>

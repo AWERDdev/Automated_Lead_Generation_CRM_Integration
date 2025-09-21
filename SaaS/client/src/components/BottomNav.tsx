@@ -12,7 +12,7 @@ const BottomNav: React.FC = () =>{
     <span className=" rounded-lg p-1">
       <Box className="text-blue-600" size={28} />
     </span>
-    <h1 className="text-2xl font-bold text-white">MediSupply</h1>
+    <h1 className="text-2xl font-bold text-white">Stock Page</h1>
   </div>
   <p className="text-gray-400 text-sm max-w-xs">Connecting healthcare providers with reliable medical supplies worldwide.</p>
 </div>
@@ -25,9 +25,28 @@ const BottomNav: React.FC = () =>{
             <li><Link className="hover:text-white transition" href={ROUTES.CONTACT}>Contact</Link></li>
           </ul>
         </div>
+        
+        <div className="flex-1 mb-8 md:mb-0 min-w-[150px]">
+          <h1 className="text-white font-bold mb-3 text-base">Product</h1>
+          <ul className="space-y-2">
+            <li><Link className="hover:text-white transition" href={ROUTES.FEATURES}>Features</Link></li>
+            <li><Link className="hover:text-white transition" href={ROUTES.ABOUT}>About</Link></li>
+            <li><Link className="hover:text-white transition" href={ROUTES.CONTACT}>Contact</Link></li>
+          </ul>
+        </div>
+
+        <div className="flex-1 mb-8 md:mb-0 min-w-[150px]">
+          <h1 className="text-white font-bold mb-3 text-base">Product</h1>
+          <ul className="space-y-2">
+            <li><Link className="hover:text-white transition" href={ROUTES.FEATURES}>Features</Link></li>
+            <li><Link className="hover:text-white transition" href={ROUTES.ABOUT}>About</Link></li>
+            <li><Link className="hover:text-white transition" href={ROUTES.CONTACT}>Contact</Link></li>
+          </ul>
+        </div>
       </div>
+      
       <div className="max-w-7xl mx-auto pt-6 text-center text-gray-500 text-sm">
-        © 2024 MediSupply. All rights reserved.
+        © 2024 Stock Page. All rights reserved.
       </div>
     </footer>
  )

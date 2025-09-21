@@ -25,7 +25,7 @@ const Home: React.FC = () => {
         {/* Hero Section */}
         <div className="w-full max-w-3xl mx-auto text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-extrabold mb-4">
-            Medical Supply <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Made Simple</span>
+            Stock Page <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Made Simple</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mb-8">
             Connect hospitals and pharmacies with reliable medicine suppliers. Real-time inventory, seamless ordering, and professional healthcare solutions.
@@ -44,12 +44,12 @@ const Home: React.FC = () => {
             <Card Title={<span className="text-purple-600 font-bold">Multi-Location</span>} P='Manage multiple hospitals and pharmacy locations from one dashboard' ICON={<Building className="text-purple-600" size={40} />} />
             <Card Title={<span className="text-orange-500 font-bold">Fast Delivery</span>} P='Reliable delivery network ensuring medicines reach you on time' ICON={<Truck className="text-orange-500" size={40} />} />
             <Card Title={<span className="text-red-600 font-bold">Secure & Compliant</span>} P='HIPAA compliant with enterprise-grade security for all transactions' ICON={<Shield className="text-red-600" size={40} />} />
-            <Card Title={<span className="text-teal-600 font-bold">24/7 Support</span>} P='Round-the-clock customer support for all your medical supply needs' ICON={<Headphones className="text-teal-600" size={40} />} />
+            <Card Title={<span className="text-teal-600 font-bold">24/7 Support</span>} P='Round-the-clock customer support for all your Stock Page needs' ICON={<Headphones className="text-teal-600" size={40} />} />
           </div>
         </div>
         {/* Call to Action Section */}
         <div className="w-full max-w-2xl mx-auto text-center  items-center mt-12 mb-8">
-          <h2 className="text-3xl font-bold mb-2">Ready to Transform Your Medical Supply Chain?</h2>
+          <h2 className="text-3xl font-bold mb-2">Ready to Transform Your Stock Page Chain?</h2>
           <p className="text-gray-600 mb-6">Join thousands of healthcare providers who trust MediSupply for their medicine needs</p>
         </div>
                 <ButtonStyle2 className="grid justify-self-center  items-center" ButtonText='Start Free Trial' onClick={goToLogin} />
