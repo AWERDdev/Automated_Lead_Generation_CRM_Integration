@@ -1,55 +1,53 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
-const axios = require('axios')
+const axios = require('axios');
 const UserschemaSideModel = require('../../Models/UserModel.js');
-// In-memory failed attempts tracker (for production, use Redis or DB) - commented out
+
+// In-memory failed attempts tracker (replace with Redis/DB in production)
 const failedAttempts = {};
 
-router.get('/',(req,res)=>{
-    console.log('Signup Route called')
-    res.json({ message: "this is signup route" })
-})
+// --------------------
+// Helpers
+// --------------------
+function getWasmFn(name) {
+    return rust[name] || rust.default?.[name];
+}
+
+async function runWasmFn(name, ...args) {
+    const fn = getWasmFn(name);
+    if (!fn) throw new Error(`${name} not found in WASM module`);
+    return fn(...args);
+}
+
+// --------------------
+// Routes
+// --------------------
+router.get('/', (req, res) => {
+    console.log('Signup Route called');
+    res.json({ message: "this is signup route" });
+});
 
 router.post('/Signup_postgres', async (req, res) => {
-    try {
-        const { name, password, email, phone, address, username } = req.body;
-        // console.log('rust', rust)
-        // console.log('rust.validate_password_wasm:', typeof rust.validate_password_wasm);
-        // console.log('rust.default.validate_password_wasm:', typeof rust.default?.validate_password_wasm);
-        console.log('Received signup request for:', email)
-        
-    console.log('Creating key for rate limiting')    
+    const { name, password, email, phone, address, username } = req.body;
     const key = email || req.ip;
 
-    // 1. Rate limiting - commented out due to WASM errors
-    console.log('setting up rate limiter')    
-    let allowed;
-    if (typeof rust.rate_limiter_wasm === "function") {
-        allowed = await rust.rate_limiter_wasm(key);
-        console.log("Rate limiter (top-level)");
-    } else if (typeof rust.default?.rate_limiter_wasm === "function") {
-        allowed = await rust.default.rate_limiter_wasm(key);
-        console.log("Rate limiter (default)");
-    } else {
-        throw new Error("rate_limiter_wasm not found in WASM module");
-    }
-    if (!allowed) {
-        return res.status(429).send('Too many attempts. Try again later.');
-    }
-        console.log('Rate limiter passed')    
-        // Validate password using Rust
-        console.log("validating password")
+    try {
+        console.log('Received signup request for:', email);
+
+        // 1. Rate Limiting
+        console.log('Applying rate limiter...');
+        const allowed = await runWasmFn("rate_limiter_wasm", key);
+        if (!allowed) {
+            return res.status(429).send('Too many attempts. Try again later.');
+        }
+        console.log('Rate limiter passed.');
+
+        // 2. Validate Password
+        console.log('Validating password...');
         try {
-            if (typeof rust.validate_password_wasm === "function") {
-                await rust.validate_password_wasm(password);
-                console.log("Password validated (top-level)");
-            } else if (typeof rust.default?.validate_password_wasm === "function") {
-                await rust.default.validate_password_wasm(password);
-                console.log("Password validated (default)");
-            } else {
-                throw new Error("validate_password_wasm not found in WASM module");
-            }
+            await runWasmFn("validate_password_wasm", password);
+            console.log("Password validated.");
         } catch (error) {
             console.error("Password validation error:", error);
             return res.status(400).json({
@@ -57,23 +55,13 @@ router.post('/Signup_postgres', async (req, res) => {
                 message: "Password validation failed: " + error
             });
         }
-        console.log(" password validated ")
-        
 
-        
-        // Hash password using Rust
-        console.log('hashing password')
+        // 3. Hash Password
+        console.log('Hashing password...');
         let hashedPassword;
         try {
-            if (typeof rust.hash_password_wasm === "function") {
-                hashedPassword = await rust.hash_password_wasm(password);
-                console.log("Password hashed (top-level)");
-            } else if (typeof rust.default?.hash_password_wasm === "function") {
-                hashedPassword = await rust.default.hash_password_wasm(password);
-                console.log("Password hashed (default)");
-            } else {
-                throw new Error("hash_password_wasm not found in WASM module");
-            }
+            hashedPassword = await runWasmFn("hash_password_wasm", password);
+            console.log("Password hashed.");
         } catch (error) {
             console.error("Password hashing error:", error);
             return res.status(500).json({
@@ -81,42 +69,34 @@ router.post('/Signup_postgres', async (req, res) => {
                 message: "Password hashing failed: " + error
             });
         }
-        // send data to FASTAPI server
-        console.log(" password hashed ")
-        console.log('sending data to FastAPI')
+
+        // 4. Send User Data to FastAPI
+        console.log('Sending user data to FastAPI...');
         const UserData = {
-            name:name,
-            email:email,
-            phone:phone,
-            address:address,
-            password:hashedPassword,
-            is_admin:false,
-            username:username
-        }
-        
-        const response = await axios.post('http://127.0.0.1:8000/data_receiver/User_Data', {
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify(UserData)
-        })
-        console.log(response.data)
-        const newUser = response.data
+            name,
+            email,
+            phone,
+            address,
+            password: hashedPassword,
+            is_admin: false,
+            username
+        };
+
+        const response = await axios.post(
+            'http://127.0.0.1:8000/data_receiver/User_Data',
+            UserData,
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        const newUser = response.data;
         console.log("User data successfully sent to FastAPI. Received UserID:", newUser);
-        
-        // Create JWT token using Rust
-        console.log('creating token')
+
+        // 5. Create JWT Token
+        console.log('Creating token...');
         let token;
         try {
-            if (typeof rust.create_token_wasm === "function") {
-                token = await rust.create_token_wasm(newUser.UserID.toString());
-                console.log("Token created (top-level)");
-            } else if (typeof rust.default?.create_token_wasm === "function") {
-                token = await rust.default.create_token_wasm(newUser.UserID.toString());
-                console.log("Token created (default)");
-            } else {
-                throw new Error("create_token_wasm not found in WASM module");
-            }
+            token = await runWasmFn("create_token_wasm", newUser.UserID.toString());
+            console.log("Token created.");
         } catch (error) {
             console.error('Token creation error:', error);
             return res.status(500).json({
@@ -124,53 +104,49 @@ router.post('/Signup_postgres', async (req, res) => {
                 message: "Error creating authentication token: " + error
             });
         }
-        
-        console.log('token created')
-        console.log('sending results to frontend')
 
+        // ✅ Success Response
         res.status(201).json({
             success: true,
             token,
-            USER: {
-                id: newUser.UserID,
-            }
+            USER: { id: newUser.UserID }
         });
-        console.log('Signup process completed for:', email)
+
+        console.log('Signup process completed for:', email);
+
     } catch (error) {
         console.error('Signup error:', error);
 
-    // If FastAPI sent back a violation error
-    if (error.response && error.response.status === 400 && error.response.data.detail) {
-        const message = error.response.data.detail;
+        // Handle FastAPI validation errors (duplicate fields)
+        if (error.response && error.response.status === 400 && error.response.data.detail) {
+            const message = error.response.data.detail;
 
-        // You can customize like MongoDB did
-        let fieldName = "unknown";
-        if (message.includes("email")) fieldName = "email";
-        else if (message.includes("username")) fieldName = "username";
-        else if (message.includes("phone")) fieldName = "phone";
-      // Increment failed attempts
-            if (!failedAttempts[key]) {
-                failedAttempts[key] = 0;
+            let fieldName = "unknown";
+            if (message.includes("email")) fieldName = "email";
+            else if (message.includes("username")) fieldName = "username";
+            else if (message.includes("phone")) fieldName = "phone";
+
+            // Increment failed attempts
+            failedAttempts[key] = (failedAttempts[key] || 0) + 1;
+
+            // Apply delay before responding
+            try {
+                const delaySecs = await runWasmFn("delay_on_failure_wasm", failedAttempts[key], 5);
+                console.log(`Delaying response for ${delaySecs} seconds...`);
+                await new Promise(res => setTimeout(res, delaySecs * 1000));
+            } catch (delayErr) {
+                console.error("Delay calculation error:", delayErr);
             }
-            failedAttempts[key]++;
 
-            // Call Rust delay calculator (returns seconds)
-            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+            return res.status(400).json({
+                success: false,
+                message,
+                field: fieldName,
+                errorType: "duplicate"
+            });
+        }
 
-            console.log(`Delaying for ${delaySecs} seconds...`);
-
-            // Wait in Node.js
-            await new Promise(res => setTimeout(res, delaySecs * 1000));
-            console.log('Delay completed delayed for:', delaySecs, 'seconds');
-        return res.status(400).json({
-            success: false,
-            message,
-            field: fieldName,
-            errorType: "duplicate"
-        });
-    }
-
-        
+        // Fallback error
         res.status(500).json({
             success: false,
             message: error.message || "An error occurred during signup"
@@ -178,5 +154,4 @@ router.post('/Signup_postgres', async (req, res) => {
     }
 });
 
-
-module.exports = router
+module.exports = router;

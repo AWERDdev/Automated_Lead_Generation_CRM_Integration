@@ -12,13 +12,13 @@ use wasm_bindgen::prelude::*;
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn create_token_wasm(user_id: &str) -> Result<String, JsValue> {
-    create_token(user_id).map_err(|e| JsValue::from_str(&e))
+    create_token(user_id).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn validate_password_wasm(password: &str) -> Result<(), JsValue> {
-    validate_password(password).map_err(|e| JsValue::from_str(&e))
+    validate_password(password).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -27,7 +27,7 @@ pub fn verify_token_wasm(token: &str) -> Result<JsValue, JsValue> {
     verify_token(token)
         .map(|claims| serde_json::to_string(&claims).unwrap())
         .map(|json| JsValue::from_str(&json))
-        .map_err(|e| JsValue::from_str(&e))
+        .map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -44,22 +44,18 @@ pub fn verify_password_wasm(password: &str, hash: &str) -> Result<bool, JsValue>
         .map_err(|e| JsValue::from_str(&format!("{:?}", e)))
 }
 
+// --- FIXED RATE LIMITER ---
 
+use lazy_static::lazy_static;
+use parking_lot::Mutex;
 
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn rate_limiter_wasm(user: &str) -> Result<bool, JsValue> {
-    Ok(RateLimiter::new(10, 60).is_allowed(user))
+lazy_static! {
+    static ref GLOBAL_RATE_LIMITER: Mutex<RateLimiter> = Mutex::new(RateLimiter::new(10, 60));
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-pub fn delay_on_failure_wasm(failed_attempts: u32) -> js_sys::Promise {
-    use wasm_bindgen_futures::future_to_promise;
-    use wasm_bindgen::JsValue;
-
-    future_to_promise(async move {
-        delay_on_failure(failed_attempts).await;
-        Ok(JsValue::UNDEFINED) // JS Promise resolves to `undefined`
-    })
+pub fn rate_limiter_wasm(user: &str) -> Result<bool, JsValue> {
+    let mut limiter = GLOBAL_RATE_LIMITER.lock();
+    Ok(limiter.is_allowed(user))
 }
