@@ -45,7 +45,6 @@ pub fn verify_password_wasm(password: &str, hash: &str) -> Result<bool, JsValue>
 }
 
 // --- FIXED RATE LIMITER ---
-
 use lazy_static::lazy_static;
 use parking_lot::Mutex;
 
