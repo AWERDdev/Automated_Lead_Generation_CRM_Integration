@@ -11,6 +11,7 @@ const UserSignup: React.FC = () => {
   const navigateTo = useRouter()
   const {
     name, setName,
+    username, setusername,
     email, setEmail,
     password, setPassword,
     confirmPassword, setConfirmPassword,
@@ -29,7 +30,7 @@ const UserSignup: React.FC = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email, password, phone, address })
+      body: JSON.stringify({ name, username, email, password, phone, address })
     });
     const data = await response.json();
     if (response.ok) {
@@ -89,6 +90,14 @@ const UserSignup: React.FC = () => {
             onChange={e => setName(e.target.value)}
           />
           {errors.name && <div className="text-red-500 text-xs mb-3 ml-1">{errors.name}</div>}
+            <input
+            type="text"
+            placeholder="username"
+            className="w-full border border-gray-400 rounded-lg px-5 py-4 mb-2 focus:outline-none focus:border-gray-500 focus:bg-gray-50 hover:border-gray-500 hover:bg-gray-50 transition-all duration-200 shadow-sm"
+            value={username}
+            onChange={e => setusername(e.target.value)}
+          />
+          {errors.name && <div className="text-red-500 text-xs mb-3 ml-1">{errors.username}</div>}
           <input
             type="email"
             placeholder="Email"

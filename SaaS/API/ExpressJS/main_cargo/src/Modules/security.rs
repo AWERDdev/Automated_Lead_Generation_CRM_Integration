@@ -43,3 +43,41 @@ pub async fn delay_on_failure(failed_attempts: u32) {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tokio::time::Instant;
+
+    #[test]
+    fn test_rate_limiter_allows_within_limit() {
+        let mut limiter = RateLimiter::new(3, 10); // 3 attempts in 10 seconds
+
+        assert!(limiter.is_allowed("user1"));
+        assert!(limiter.is_allowed("user1"));
+        assert!(limiter.is_allowed("user1"));
+
+        // Fourth attempt should be blocked
+        assert!(!limiter.is_allowed("user1"));
+    }
+
+    #[test]
+    fn test_rate_limiter_resets_after_window() {
+        let mut limiter = RateLimiter::new(2, 0); // 2 attempts, 0s window (instant reset)
+
+        assert!(limiter.is_allowed("user2"));
+        assert!(limiter.is_allowed("user2"));
+        // Because window is 0, next attempt should reset and allow again
+        assert!(limiter.is_allowed("user2"));
+    }
+
+    #[tokio::test]
+    async fn test_delay_on_failure() {
+        use tokio::time::{Duration};
+
+        let start = Instant::now();
+        delay_on_failure(1).await; // should delay 2^1 + 5 = 7 seconds
+        let elapsed = start.elapsed();
+
+        assert!(elapsed >= Duration::from_secs(7));
+    }
+}

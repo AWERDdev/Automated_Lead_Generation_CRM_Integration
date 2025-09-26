@@ -1,6 +1,8 @@
 export type userProps = {
     name: string;
     setName: (v: string) => void;
+    username: string;
+    setusername: (v: string) => void;
     email: string;
     setEmail: (v: string) => void;
     password: string;

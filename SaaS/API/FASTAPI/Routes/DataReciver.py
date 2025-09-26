@@ -7,6 +7,10 @@ from DB.Modules.UserConfig import insert_User
 from DB.Modules.AdminConfig import insert_Admin
 from DB.Modules.UserConfig import search_User
 from DB.Modules.AdminConfig import search_Admin
+import logging
+
+# Configure logging once at the start of your app
+logging.basicConfig(level=logging.DEBUG)
 
 router = APIRouter(
     prefix="/data_receiver",
@@ -25,15 +29,22 @@ async def read_data(UserData: UserModel = Body(...)):
         raise HTTPException(status_code=404, detail="Admin Data not found")
     try:
         print(F"user data has been received")
+        logging.debug(f"Received user data: {UserData}")
         print(" connecting to DB ")
+        logging.debug("Connecting to DB")
         conn = connect_DB()
         print(" connection has been created ")
+        logging.debug("connection has been created")
         print(" Inserting User Data ")
+        logging.debug(" Inserting User Data")
         User_ID = insert_User(conn, UserData.name, UserData.email, UserData.phone, UserData.address ,UserData.password , UserData.is_admin,UserData.username)
         print(" User Data has been inserted ")
+        logging.debug("User Data has been inserted")
         conn.close()
         print(" Connection has been closed ")
+        logging.debug("Connection has been closed")
         print(User_ID)
+        logging.debug(f"Inserted User ID: {User_ID}")
         return {"message": "User data has been saved in the DB succesfully","UserID": User_ID}
     except UniqueViolation as e:
         # Postgres duplicate key error
@@ -55,7 +66,7 @@ async def read_data(AdminData: AdminModel = Body(...)):
     if not AdminData:
         raise HTTPException(status_code=404, detail="Admin Data not found")
     try:
-        print(F"user data has been received")
+        print(F"admin data has been received")
         print(" connecting to DB ")
         conn = connect_DB()
         print(" connection has been created ")

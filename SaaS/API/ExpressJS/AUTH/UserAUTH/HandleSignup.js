@@ -14,15 +14,16 @@ router.get('/',(req,res)=>{
 router.post('/Signup_postgres', async (req, res) => {
     try {
         const { name, password, email, phone, address, username } = req.body;
-        console.log('rust', rust)
-        console.log('rust.validate_password_wasm:', typeof rust.validate_password_wasm);
-        console.log('rust.default.validate_password_wasm:', typeof rust.default?.validate_password_wasm);
+        // console.log('rust', rust)
+        // console.log('rust.validate_password_wasm:', typeof rust.validate_password_wasm);
+        // console.log('rust.default.validate_password_wasm:', typeof rust.default?.validate_password_wasm);
         console.log('Received signup request for:', email)
-            
+        
+    console.log('Creating key for rate limiting')    
     const key = email || req.ip;
 
     // 1. Rate limiting - commented out due to WASM errors
-
+    console.log('setting up rate limiter')    
     let allowed;
     if (typeof rust.rate_limiter_wasm === "function") {
         allowed = await rust.rate_limiter_wasm(key);
@@ -36,6 +37,7 @@ router.post('/Signup_postgres', async (req, res) => {
     if (!allowed) {
         return res.status(429).send('Too many attempts. Try again later.');
     }
+        console.log('Rate limiter passed')    
         // Validate password using Rust
         console.log("validating password")
         try {
@@ -59,7 +61,6 @@ router.post('/Signup_postgres', async (req, res) => {
         
 
         
-        console.log("user doesn't exist")
         // Hash password using Rust
         console.log('hashing password')
         let hashedPassword;
@@ -81,6 +82,8 @@ router.post('/Signup_postgres', async (req, res) => {
             });
         }
         // send data to FASTAPI server
+        console.log(" password hashed ")
+        console.log('sending data to FastAPI')
         const UserData = {
             name:name,
             email:email,
@@ -91,7 +94,12 @@ router.post('/Signup_postgres', async (req, res) => {
             username:username
         }
         
-        const response = await axios.post('http://127.0.0.1:8000/data_receiver/User_Data', UserData)
+        const response = await axios.post('http://127.0.0.1:8000/data_receiver/User_Data', {
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(UserData)
+        })
         console.log(response.data)
         const newUser = response.data
         console.log("User data successfully sent to FastAPI. Received UserID:", newUser);
@@ -117,8 +125,8 @@ router.post('/Signup_postgres', async (req, res) => {
             });
         }
         
-        console.log(' token created')
-        console.log('sending results')
+        console.log('token created')
+        console.log('sending results to frontend')
 
         res.status(201).json({
             success: true,
@@ -127,10 +135,11 @@ router.post('/Signup_postgres', async (req, res) => {
                 id: newUser.UserID,
             }
         });
+        console.log('Signup process completed for:', email)
     } catch (error) {
         console.error('Signup error:', error);
 
-    // If FastAPI sent back a duplicate violation error
+    // If FastAPI sent back a violation error
     if (error.response && error.response.status === 400 && error.response.data.detail) {
         const message = error.response.data.detail;
 
@@ -152,6 +161,7 @@ router.post('/Signup_postgres', async (req, res) => {
 
             // Wait in Node.js
             await new Promise(res => setTimeout(res, delaySecs * 1000));
+            console.log('Delay completed delayed for:', delaySecs, 'seconds');
         return res.status(400).json({
             success: false,
             message,
