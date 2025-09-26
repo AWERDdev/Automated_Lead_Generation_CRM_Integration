@@ -12,7 +12,8 @@ router = APIRouter(
 @router.get("/")
 def DBMessage():
     return {"message": "Database Setup Endpoint has been reached"}
-
+# DB setup is a one time run operation
+# In a production environment, this should be handled with migrations
 @router.get("/Setup")
 def SetupDB():
     print('DB setup has been started')
