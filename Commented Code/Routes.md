@@ -708,3 +708,23 @@
 
 
 
+        // // 1. Rate Limiting
+        // console.log('Applying rate limiter...');
+        // const allowed = await runWasmFn("rate_limiter_wasm", key);
+        // if (!allowed) {
+        //     return res.status(429).send('Too many attempts. Try again later.');
+        // }
+        // console.log('Rate limiter passed.');
+
+        // // 2. Validate Password
+        // console.log('Validating password...');
+        // try {
+        //     await runWasmFn("validate_password_wasm", password);
+        //     console.log("Password validated.");
+        // } catch (error) {
+        //     console.error("Password validation error:", error);
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Password validation failed: " + error
+        //     });
+        // }

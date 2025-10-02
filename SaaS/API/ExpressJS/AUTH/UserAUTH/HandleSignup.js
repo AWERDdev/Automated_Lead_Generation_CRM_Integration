@@ -3,10 +3,13 @@ const router = express.Router();
 const rust = require('../../main_cargo/pkg/rust_processer_lib.js');
 const axios = require('axios');
 const UserschemaSideModel = require('../../Models/UserModel.js');
-
-// In-memory failed attempts tracker (replace with Redis/DB in production)
-const failedAttempts = {};
-
+const Redis = require('ioredis');
+const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
+// --------------------
+// In-memory Variables
+// --------------------
+const LIMIT = 3;
+const WINDOW = 15;
 // --------------------
 // Helpers
 // --------------------
@@ -20,6 +23,17 @@ async function runWasmFn(name, ...args) {
     return fn(...args);
 }
 
+async function checkRateLimit(key) {
+    const redisKey = `rate:${key}`;
+    const count = await redis.incr(redisKey);
+
+    if (count === 1) {
+        // First request, set expiration
+        await redis.expire(redisKey, WINDOW);
+    }
+
+    return { allowed: count <= LIMIT, remaining: Math.max(0, LIMIT - count), reset: WINDOW };
+}
 // --------------------
 // Routes
 // --------------------
@@ -36,23 +50,17 @@ router.post('/Signup_postgres', async (req, res) => {
         console.log('Received signup request for:', email);
 
         // 1. Rate Limiting
-        console.log('Applying rate limiter...');
-        const allowed = await runWasmFn("rate_limiter_wasm", key);
+        const { allowed, remaining, reset } = await checkRateLimit(key);
+        res.set("RateLimit-Limit", LIMIT);
+        res.set("RateLimit-Remaining", remaining);
+        res.set("RateLimit-Reset", reset);
         if (!allowed) {
-            return res.status(429).send('Too many attempts. Try again later.');
-        }
-        console.log('Rate limiter passed.');
-
-        // 2. Validate Password
-        console.log('Validating password...');
-        try {
-            await runWasmFn("validate_password_wasm", password);
-            console.log("Password validated.");
-        } catch (error) {
-            console.error("Password validation error:", error);
-            return res.status(400).json({
+            console.warn(`Rate limit exceeded for ${key}`);
+            return res.status(429).json({
                 success: false,
-                message: "Password validation failed: " + error
+                message: "Too many attempts. Try again later.",
+                remaining,
+                reset
             });
         }
 
@@ -125,18 +133,6 @@ router.post('/Signup_postgres', async (req, res) => {
             if (message.includes("email")) fieldName = "email";
             else if (message.includes("username")) fieldName = "username";
             else if (message.includes("phone")) fieldName = "phone";
-
-            // Increment failed attempts
-            failedAttempts[key] = (failedAttempts[key] || 0) + 1;
-
-            // Apply delay before responding
-            try {
-                const delaySecs = await runWasmFn("delay_on_failure_wasm", failedAttempts[key], 5);
-                console.log(`Delaying response for ${delaySecs} seconds...`);
-                await new Promise(res => setTimeout(res, delaySecs * 1000));
-            } catch (delayErr) {
-                console.error("Delay calculation error:", delayErr);
-            }
 
             return res.status(400).json({
                 success: false,
