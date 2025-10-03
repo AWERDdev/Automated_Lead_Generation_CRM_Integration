@@ -8,7 +8,7 @@ const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
 // --------------------
 // Config
 // --------------------
-const LIMIT = 5;      // Attempts allowed per window
+const LIMIT = 2;      // Attempts allowed per window
 const WINDOW = 15;    // seconds
 
 // --------------------

@@ -83,31 +83,3 @@ export const useUserLoginInputHandling = () => {
   };
 };
 
-// User Login input handling hook
-// export const useUserLoginInputHandling = () => {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [errors, setErrors] = useState<Record<string, string>>({});
-
-//   const reset = () => {
-//     setEmail("");
-//     setPassword("");
-//     setErrors({});
-//   };
-
-//   const validate = () => {
-//     const newErrors: Record<string, string> = {};
-//     if (!email) newErrors.email = "Email is required";
-//     if (!password) newErrors.password = "Password is required";
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   return {
-//     email, setEmail,
-//     password, setPassword,
-//     errors, setErrors,
-//     reset,
-//     validate,
-//   };
-// };
