@@ -2,157 +2,155 @@ const express = require("express");
 const router = express.Router();
 const rust = require("../../main_cargo/pkg/rust_processer_lib.js");
 const axios = require("axios");
-const failedAttempts = {};
-const AdminschemaSideModel = require('../../Models/AdminModel'); 
+const Redis = require("ioredis");
+const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
+
+// --------------------
+// Config
+// --------------------
+const LIMIT = 5;      // Attempts allowed per window
+const WINDOW = 15;    // seconds
+
+// --------------------
+// Helpers
+// --------------------
+function getWasmFn(name) {
+    return rust[name] || rust.default?.[name];
+}
+
+async function runWasmFn(name, ...args) {
+    const fn = getWasmFn(name);
+    if (!fn) throw new Error(`${name} not found in WASM module`);
+    return fn(...args);
+}
+
+async function checkRateLimit(key) {
+    const redisKey = `rate:admin_login:${key}`;
+    const count = await redis.incr(redisKey);
+
+    if (count === 1) {
+        await redis.expire(redisKey, WINDOW);
+    }
+
+    return { allowed: count <= LIMIT, remaining: Math.max(0, LIMIT - count), reset: WINDOW };
+}
+
+// --------------------
+// Routes
+// --------------------
 router.get("/", (req, res) => {
-  console.log("Admin Login Route called");
-  res.json({ message: "This is the admin login route" });
+    console.log("Admin Login Route called");
+    res.json({ message: "This is the admin login route" });
 });
 
 router.post("/login_postgres_Admin", async (req, res) => {
-  const { email, password } = req.body;
-  console.log("Login attempt for:", email);
+    const { email, password } = req.body;
     const key = email || req.ip;
-        
-    // 1. Rate limiting - commented out due to WASM errors
-    
-        let allowed;
-        if (typeof rust.rate_limiter_wasm === "function") {
-            allowed = await rust.rate_limiter_wasm(key);
-            console.log("Rate limiter (top-level)");
-        } else if (typeof rust.default?.rate_limiter_wasm === "function") {
-            allowed = await rust.default.rate_limiter_wasm(key);
-            console.log("Rate limiter (default)");
-        } else {
-            throw new Error("rate_limiter_wasm not found in WASM module");
-        }
+
+    try {
+        console.log("Admin login attempt for:", email);
+
+        // 1. Rate Limiting
+        const { allowed, remaining, reset } = await checkRateLimit(key);
+        res.set("RateLimit-Limit", LIMIT);
+        res.set("RateLimit-Remaining", remaining);
+        res.set("RateLimit-Reset", reset);
+
         if (!allowed) {
-            return res.status(429).send('Too many attempts. Try again later.');
+            console.warn(`Rate limit exceeded for ${key}`);
+            return res.status(429).json({
+                success: false,
+                message: "Too many attempts. Try again later.",
+                remaining,
+                reset
+            });
         }
 
-  try {
+        // 2. Fetch Admin Data
+        console.log("Fetching admin data from FastAPI...");
+        const response = await axios.get(
+            "http://127.0.0.1:8000/data_receiver/Verfiy_Data_admin",
+            { params: { email } }
+        );
 
+        const admin = response.data;
+        if (!admin) {
+            console.warn("Admin not found for email:", email);
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
 
-    // ✅ Fetch admin data from FastAPI service
-    const response = await axios.get("http://127.0.0.1:8000/data_receiver/Verfiy_Data_admin", {
-      params: { email },
-    });
-    
-    const admin = response.data;
-    if (!admin) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-
-    // ✅ Verify password using Rust (compare plaintext input with stored hash)
-    try {
-      let isValidPassword;
-      if (typeof rust.verify_password_wasm === "function") {
-        isValidPassword = await rust.verify_password_wasm(password, admin.password);
-        console.log("Password verified (top-level)");
-      } else if (typeof rust.default?.verify_password_wasm === "function") {
-        isValidPassword = await rust.default.verify_password_wasm(password, admin.password);
-        console.log("Password verified (default)");
-      } else {
-        throw new Error("verify_password_wasm not found in WASM module");
-      }
-
-      if (!isValidPassword) {
-              // Increment failed attempts
-            if (!failedAttempts[key]) {
-                failedAttempts[key] = 0;
+        // 3. Verify Password
+        console.log("Verifying password...");
+        let isValidPassword;
+        try {
+            isValidPassword = await runWasmFn("verify_password_wasm", password, admin.password);
+            if (!isValidPassword) {
+                console.warn("Invalid password for:", email);
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid email or password"
+                });
             }
-            failedAttempts[key]++;
+            console.log("Password verified.");
+        } catch (error) {
+            console.error("Password verification error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Error verifying password: " + error
+            });
+        }
 
-            // Call Rust delay calculator (returns seconds)
-            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
+        // 4. Create JWT Token
+        console.log("Creating token...");
+        let token;
+        try {
+            token = await runWasmFn("create_token_wasm", admin.AdminID.toString());
+            console.log("Token created.");
+        } catch (error) {
+            console.error("Token creation error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Error creating authentication token: " + error
+            });
+        }
 
-            console.log(`Delaying for ${delaySecs} seconds...`);
-
-            // Wait in Node.js
-            await new Promise(res => setTimeout(res, delaySecs * 1000));
-
-        return res.status(401).json({
-          success: false,
-          message: "Invalid email or password",
+        // ✅ Success Response
+        res.status(200).json({
+            success: true,
+            token,
+            admin: { id: admin.AdminID, email: admin.email }
         });
-      }
+
+        console.log("Admin login process completed for:", email);
+
     } catch (error) {
-      console.error("Password verification error:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Error verifying password: " + error,
-      });
-    }
+        console.error("Admin Login error:", error);
 
-    // ✅ Create JWT token using Rust
-    try {
-      let token;
-      if (typeof rust.create_token_wasm === "function") {
-        token = await rust.create_token_wasm(admin.admin.AdminID.toString());
-        console.log("Token created (top-level)");
-      } else if (typeof rust.default?.create_token_wasm === "function") {
-        token = await rust.default.create_token_wasm(admin.admin.AdminID.toString());
-        console.log("Token created (default)");
-      } else {
-        throw new Error("create_token_wasm not found in WASM module");
-      }
+        // Handle FastAPI validation errors
+        if (error.response && error.response.status === 400 && error.response.data.detail) {
+            const message = error.response.data.detail;
 
-      return res.status(200).json({
-        success: true,
-        token,
-        admin: {
-          id: admin.admin.AdminID,
-        },
-      });
-    } catch (error) {
-      console.error("Token creation error:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Error creating authentication token: " + error,
-      });
-    }
-  } catch (error) {
- console.error('Admin Login error:', error);
+            let fieldName = "unknown";
+            if (message.includes("email")) fieldName = "email";
+            else if (message.includes("password")) fieldName = "password";
 
+            return res.status(400).json({
+                success: false,
+                message,
+                field: fieldName,
+                errorType: "duplicate"
+            });
+        }
 
-    // If FastAPI sent back a duplicate violation error
-    if (error.response && error.response.status === 400 && error.response.data.detail) {
-        const message = error.response.data.detail;
-
-        // You can customize like MongoDB did
-        let fieldName = "unknown";
-        if (message.includes("email")) fieldName = "email";
-        else if (message.includes("password")) fieldName = "password";
-        return res.status(400).json({
+        // Fallback error
+        res.status(500).json({
             success: false,
-            message,
-            field: fieldName,
-            errorType: "duplicate"
+            message: error.message || "An error occurred during admin login"
         });
     }
-      // Increment failed attempts
-            if (!failedAttempts[key]) {
-                failedAttempts[key] = 0;
-            }
-            failedAttempts[key]++;
-
-            // Call Rust delay calculator (returns seconds)
-            const delaySecs = await rust.delay_on_failure_wasm(failedAttempts[key], 5); // base 5s in prod
-
-            console.log(`Delaying for ${delaySecs} seconds...`);
-
-            // Wait in Node.js
-            await new Promise(res => setTimeout(res, delaySecs * 1000));
-
-    res.status(500).json({
-      success: false,
-      message: error.message || "An error occurred during login",
-    });
-  }
 });
-
 
 module.exports = router;
