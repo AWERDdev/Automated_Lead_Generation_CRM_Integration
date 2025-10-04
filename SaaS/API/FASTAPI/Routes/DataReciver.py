@@ -36,7 +36,6 @@ async def insert_user_data(UserData: UserModel = Body(...)):
     if not UserData:
         raise HTTPException(status_code=404, detail="User Data not found")
 
-    conn = None
     try:
         print("📩 User data has been received")
         logging.debug(f"Received user data: {UserData}")
