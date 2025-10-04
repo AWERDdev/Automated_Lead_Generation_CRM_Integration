@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { userProps } from "@/Types/User";
+import type { userLoginProps } from "@/Types/User";
 // Signup input handling hook with individual useState for each field
 export const useSignupInputHandling = ():userProps => {
   const [name, setName] = useState("");
@@ -55,7 +56,7 @@ export const useSignupInputHandling = ():userProps => {
 };
 
 // Login input handling hook with individual useState for each field
-export const useUserLoginInputHandling = () => {
+export const useUserLoginInputHandling = ():userLoginProps => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -70,6 +71,7 @@ export const useUserLoginInputHandling = () => {
     const newErrors: Record<string, string> = {};
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
+    if (password && password.length < 6) newErrors.password = "Password must be at least 6 characters";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

@@ -19,3 +19,13 @@ export type userProps = {
     validate: () => boolean | Promise<boolean>;
   } 
   
+  export type userLoginProps = {
+  email: string;
+  setEmail: (v: string) => void;
+  password: string;
+  setPassword: (v: string) => void;
+  errors: Record<string, string>;
+  setErrors: (v: Record<string, string>) => void;
+  reset: () => void;
+  validate: () => boolean | Promise<boolean>;
+};
