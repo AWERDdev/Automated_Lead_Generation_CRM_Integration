@@ -86,6 +86,13 @@ def connect_DB(dbname: str = "LeadGenerator"):
             user=os.getenv("user"),
             password=os.getenv("password"),
         )
+
+        # 🧠 Debug: show where we actually connected
+        with conn.cursor() as cur:
+            cur.execute("SELECT inet_server_addr(), inet_server_port();")
+            server_info = cur.fetchone()
+            print(f"🔍 Connected to Postgres at: {server_info}")
+
         logging.info(f"Connected to database '{dbname}' successfully.")
         return conn
     except Exception as e:

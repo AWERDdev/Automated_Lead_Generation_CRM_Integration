@@ -8,7 +8,7 @@ const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379");
 // --------------------
 // In-memory Variables
 // --------------------
-const LIMIT = 2;
+const LIMIT = 200;
 const WINDOW = 15;
 // --------------------
 // Helpers
