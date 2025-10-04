@@ -75,6 +75,6 @@ if __name__ == "__main__":
     )
 
 # Alternative CLI:
-# uvicorn fastAPI.__init__:app --reload
+# uvicorn __init__:app --reload
 # uvicorn __init__:app --reload --log-level debug
-# uvicorn fastAPI.__init__:app --host 0.0.0.0 --port 8000
+# uvicorn __init__:app --host 0.0.0.0 --port 8000

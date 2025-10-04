@@ -69,7 +69,7 @@ async def insert_user_data(UserData: UserModel = Body(...)):
             conn.close()
         raise HTTPException(
             status_code=400,
-            detail="Duplicate field error: one of email, username, or phone already exists.",
+            detail="Duplicate field error: one of email, username, or phone or name already exists.",
         )
     except Exception as e:
         if conn:

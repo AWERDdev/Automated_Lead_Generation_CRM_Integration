@@ -6,7 +6,7 @@ def create_table_Users(conn):
 
             CREATE TABLE IF NOT EXISTS private_data.Users (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                name TEXT NOT NULL,
+                name TEXT UNIQUE NOT NULL,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
