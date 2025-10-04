@@ -39,8 +39,23 @@ app.add_middleware(
 def welcome_message():
     return {"message": "Welcome to the DOM Leads Extractor Python API Main Route"}
 
+# --------------------
+# Health Check Route
+# --------------------
+@app.get("/db_health")
+def db_health():
+    from DB.Modules.DBSetup import connect_DB
+    try:
+        conn = connect_DB()
+        conn.close()
+        return {"status": "ok", "message": "Database connection successful"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# --------------------
 # Routers
-from Routes.DataReceiver import router as data_receiver_router  # ✅ spelling fixed
+
+from Routes.DataReciver import router as data_receiver_router  # ✅ spelling fixed
 from DB.DB import router as db_router
 
 app.include_router(data_receiver_router)
@@ -61,5 +76,5 @@ if __name__ == "__main__":
 
 # Alternative CLI:
 # uvicorn fastAPI.__init__:app --reload
-# uvicorn fastAPI.__init__:app --reload --log-level debug
+# uvicorn __init__:app --reload --log-level debug
 # uvicorn fastAPI.__init__:app --host 0.0.0.0 --port 8000
